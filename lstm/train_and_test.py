@@ -7,7 +7,7 @@ import os
 import implementation as imp
 
 batch_size = imp.batch_size
-iterations = 1000
+iterations = 2000
 seq_length = 40  # Maximum length of sentence
 
 checkpoints_dir = "./checkpoints"
