@@ -7,7 +7,7 @@ import os
 import implementation as imp
 
 batch_size = imp.batch_size
-iterations = 2000
+iterations = 3000
 seq_length = 40  # Maximum length of sentence
 
 checkpoints_dir = "./checkpoints"
@@ -16,7 +16,11 @@ def validation_split(pct_validation):
     data_size = training_data.shape[0]
     num_validation = int(data_size*pct_validation)
     num_training = data_size - num_validation
-    # np.random.shuffle(training_data)
+    # Shuffle
+    rng_state = np.random.get_state()
+    np.random.shuffle(training_data)
+    np.random.set_state(rng_state)
+    np.random.shuffle(training_classes)
     # Split classes to training and validation
     training, validation = np.split(training_data, [num_training], axis=0)
     training_cls, validation_cls = np.split(training_classes, [num_training], axis=0)
