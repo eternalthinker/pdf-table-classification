@@ -11,6 +11,13 @@ from load_table_data import clean_table
 batch_size = 5
 max_words = 40
 
+class_mapping = {
+    "PROFIT_OR_LOSS" : 0,
+    "FINANCIAL_POSITION": 1,
+    "CHANGES_IN_EQUITY": 2,
+    "CASH_FLOWS": 3
+}
+
 def load_data(word2vec_dict):
     if False: # os.path.exists(os.path.join(os.path.dirname(__file__), "tables.pkl")):
         print("loading pickled vectorized table...")
@@ -37,16 +44,10 @@ def load_data(word2vec_dict):
     tables_mapping = dict()
     with open('classes.csv', 'r', encoding='utf-8') as classes_file:
         content = classes_file.read().split('\n')[1:]
-        class_mapping = {
-            "PROFIT_OR_LOSS" : 0,
-            "FINANCIAL_POSITION": 1,
-            "CHANGES_IN_EQUITY": 2,
-            "CASH_FLOWS": 3
-        }
+        
         for item in content:
             filename, class_str = item.split(',')
             tables_mapping[filename] = class_mapping[class_str]
-
 
     for fname, table_class in tables_mapping.items():
         f = os.path.join('data', '{}.html'.format(fname))
@@ -110,25 +111,25 @@ def define_graph(word2vec_embeddings_arr):
     vector_length = 40
     num_classes = 4
     num_lstm = 64
-    num_layers = 4 # not used
+    num_layers = 4 
 
     dropout_keep_prob = tf.placeholder_with_default(1.0, shape=(), name="dropout_keep_prob")
 
     input_data = tf.placeholder(tf.int32, shape = [batch_size, vector_length], name="input_data")
     labels = tf.placeholder(tf.float32, shape=[batch_size, num_classes], name="labels")
 
-
     embed_input_data = tf.nn.embedding_lookup(word2vec_embeddings_arr, input_data)
-    # Uncomment in case of multi layers
-    # lstm_stack = []
-    # for _ in range(num_layers):
-    #     lstm_cell = tf.contrib.rnn.BasicLSTMCell(num_lstm)
-    #     drop = tf.contrib.rnn.DropoutWrapper(cell=lstm_cell, output_keep_prob=dropout_keep_prob)
-    #     lstm_stack.append(drop)
-    # cell = tf.contrib.rnn.MultiRNNCell(lstm_stack)
-    lstm_cell = tf.contrib.rnn.BasicLSTMCell(num_lstm)
-    drop = tf.contrib.rnn.DropoutWrapper(cell=lstm_cell, output_keep_prob=dropout_keep_prob)
-    cell = drop
+    lstm_stack = []
+    for _ in range(num_layers):
+        lstm_cell = tf.contrib.rnn.BasicLSTMCell(num_lstm)
+        drop = tf.contrib.rnn.DropoutWrapper(cell=lstm_cell, output_keep_prob=dropout_keep_prob)
+        lstm_stack.append(drop)
+    multi_cell = tf.contrib.rnn.MultiRNNCell(lstm_stack)
+    cell = multi_cell
+    # Single cell
+    # lstm_cell = tf.contrib.rnn.BasicLSTMCell(num_lstm) 
+    # drop = tf.contrib.rnn.DropoutWrapper(cell=lstm_cell, output_keep_prob=dropout_keep_prob)
+    # cell = drop
     value, final_state = tf.nn.dynamic_rnn(cell, embed_input_data, dtype=tf.float32)
 
     weight = tf.Variable(tf.truncated_normal([num_lstm, num_classes], dtype=tf.float32))
