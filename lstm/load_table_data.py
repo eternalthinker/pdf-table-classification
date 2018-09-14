@@ -38,6 +38,10 @@ def read_data():
     #                                    'data/neg/*.txt')))
     print("Parsing %s files" % len(file_list))
     for f in file_list:
+        basename = os.path.basename(f)
+        filename, ext = os.path.splitext(basename)
+        if not os.path.exists("data/{}.png".format(filename)):
+            print(filename, f)
         with open(f, "r", encoding='utf-8') as openf:
             s = openf.read()
             s = clean_table(s)

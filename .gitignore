@@ -2,6 +2,7 @@ data/
 *.npy
 *.pkl 
 tensorboard/
+output/
 
 ### Code ###
 # Visual Studio Code - https://code.visualstudio.com/
