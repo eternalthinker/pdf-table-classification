@@ -29,9 +29,10 @@ def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
     assert low_dim_embs.shape[0] >= len(labels), 'More labels than embeddings'
 
     plt.figure(figsize=(18, 18))  # in inches
+    colors = ['r', 'g', 'b', 'orange']
     for i, label in enumerate(labels):
         x, y = low_dim_embs[i, :]
-        plt.scatter(x, y)
+        plt.scatter(x, y, c=colors[class_mapping[label]])
         plt.annotate(label,
                      xy=(x, y),
                      xytext=(5, 2),
