@@ -7,7 +7,7 @@ import os
 import implementation as imp
 
 batch_size = imp.batch_size
-iterations = 2000
+iterations = 600
 seq_length = 40  # Maximum length of sentence
 reverse_class_mapping = imp.reverse_class_mapping
 
@@ -88,7 +88,8 @@ word2vec_array, word2vec_dict = imp.load_word2vec_embeddings()
 training_data, training_classes, training_fnames = imp.load_data(word2vec_dict)
 training_data, training_classes, training_fnames, validation_data, validation_classes, validation_fnames = \
     validation_split(0.2)
-input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, prediction, correct_pred, pred_class = \
+input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, \
+    prediction, correct_pred, pred_class, pred_prob = \
     imp.define_graph(word2vec_array)
 
 # tensorboard
@@ -185,8 +186,8 @@ output_lines = []
 for offset in range(num_batches):
     batch_data, batch_labels, batch_fnames = getNextTrainBatch(offset, batch_size)
     sess.run(optimizer, {input_data: batch_data, labels: batch_labels, dropout_keep_prob: 1.0})
-    loss_value, accuracy_value, summary, predictions, pred_classes = sess.run(
-        [loss, accuracy, summary_op, prediction, pred_class],
+    loss_value, accuracy_value, summary, predictions, pred_classes, pred_probs = sess.run(
+        [loss, accuracy, summary_op, prediction, pred_class, pred_prob],
         {input_data: batch_data,
          labels: batch_labels})
     output_line_batch = batch_fnames[:]
@@ -195,7 +196,7 @@ for offset in range(num_batches):
         batch_class, _ = max(enumerate(batch_label), key=lambda x: x[1])
         batch_classes.append(reverse_class_mapping[batch_class])
     for i in range(batch_size):
-        pred_strs = list(map(lambda n: str(n), predictions[i].tolist()))
+        pred_strs = list(map(lambda n: str(n), pred_probs[i].tolist()))
         output_line_batch[i] = [output_line_batch[i]] + [batch_classes[i]] + pred_strs
     output_lines += output_line_batch
 

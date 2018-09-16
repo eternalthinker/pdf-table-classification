@@ -117,7 +117,7 @@ def define_graph(word2vec_embeddings_arr):
     vector_length = 40
     num_classes = 4
     num_lstm = 64
-    num_layers = 4
+    num_layers = 1
 
     dropout_keep_prob = tf.placeholder_with_default(1.0, shape=(), name="dropout_keep_prob")
 
@@ -143,6 +143,7 @@ def define_graph(word2vec_embeddings_arr):
     value = tf.transpose(value, [1, 0, 2])
     last = tf.gather(value, int(value.get_shape()[0]) - 1)
     prediction = (tf.matmul(last, weight) + bias)
+    pred_prob = tf.nn.softmax(logits=prediction, name="pred_prob")
 
     pred_class = tf.argmax(prediction, 1, name="pred_class")
     correct_pred = tf.equal(tf.argmax(prediction, 1), tf.argmax(labels, 1), name="correct_pred")
@@ -151,4 +152,4 @@ def define_graph(word2vec_embeddings_arr):
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels), name="loss")
     optimizer = tf.train.AdamOptimizer().minimize(loss)
 
-    return input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, prediction, correct_pred, pred_class
+    return input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, prediction, correct_pred, pred_class, pred_prob

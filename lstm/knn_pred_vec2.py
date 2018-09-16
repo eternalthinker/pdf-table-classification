@@ -6,7 +6,7 @@ from sklearn import datasets
 
 from implementation import class_mapping
 
-n_neighbors = 15
+n_neighbors = 2
 
 # Import data
 fnames = []
