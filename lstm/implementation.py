@@ -18,6 +18,10 @@ class_mapping = {
     "CASH_FLOWS": 3
 }
 
+reverse_class_mapping = dict()
+for class_name, class_num in class_mapping.items():
+    reverse_class_mapping[class_num] = class_name
+
 def load_data(word2vec_dict):
     if False: # os.path.exists(os.path.join(os.path.dirname(__file__), "tables.pkl")):
         print("loading pickled vectorized table...")
@@ -27,6 +31,7 @@ def load_data(word2vec_dict):
 
     data = []
     classes = []
+    fnames = []
     dir = os.path.dirname(__file__)
     file_list = glob.glob(os.path.join(dir, 'data/*.html'))
     i = 0
@@ -76,11 +81,12 @@ def load_data(word2vec_dict):
             
         data.append(int_value)
         classes.append(table_class)
+        fnames.append(fname)
 
     data = np.array(data, dtype=np.float32)
     with open("tables.pkl", "wb") as reviews_file:
         pickle.dump(data, reviews_file)
-    return data, classes
+    return data, classes, fnames
 
 
 def load_word2vec_embeddings():
@@ -111,7 +117,7 @@ def define_graph(word2vec_embeddings_arr):
     vector_length = 40
     num_classes = 4
     num_lstm = 64
-    num_layers = 4 
+    num_layers = 1
 
     dropout_keep_prob = tf.placeholder_with_default(1.0, shape=(), name="dropout_keep_prob")
 
@@ -137,11 +143,13 @@ def define_graph(word2vec_embeddings_arr):
     value = tf.transpose(value, [1, 0, 2])
     last = tf.gather(value, int(value.get_shape()[0]) - 1)
     prediction = (tf.matmul(last, weight) + bias)
+    pred_prob = tf.nn.softmax(logits=prediction, name="pred_prob")
 
-    correct_pred = tf.equal(tf.argmax(prediction, 1), tf.argmax(labels, 1))
+    pred_class = tf.argmax(prediction, 1, name="pred_class")
+    correct_pred = tf.equal(tf.argmax(prediction, 1), tf.argmax(labels, 1), name="correct_pred")
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name="accuracy")
 
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=labels), name="loss")
     optimizer = tf.train.AdamOptimizer().minimize(loss)
 
-    return input_data, labels, dropout_keep_prob, optimizer, accuracy, loss
+    return input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, prediction, correct_pred, pred_class, pred_prob
