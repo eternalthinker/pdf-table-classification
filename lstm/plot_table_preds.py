@@ -28,7 +28,7 @@ y = np.array(classes)
 def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
     assert low_dim_embs.shape[0] >= len(labels), 'More labels than embeddings'
 
-    plt.figure(figsize=(18, 18))  # in inches
+    plt.figure(figsize=(14, 9))  # in inches
     colors = ['r', 'g', 'b', 'orange']
     for i, label in enumerate(labels):
         x, y = low_dim_embs[i, :]
@@ -44,7 +44,7 @@ def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
     print("plots saved in {0}".format(filename))
 
 if __name__ == "__main__":
-    tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000, method='exact')
+    tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000) #, method='exact')
     plot_only = len(X) #len(reverse_dictionary)
     low_dim_embs = tsne.fit_transform(X[:plot_only, :])
     labels = [reverse_class_mapping[i] for i in y[:plot_only]]

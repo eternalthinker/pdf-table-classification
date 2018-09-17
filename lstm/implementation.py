@@ -8,7 +8,7 @@ import pickle # For testing
 import re
 from load_table_data import clean_table
 
-batch_size = 5
+batch_size = 10
 max_words = 40
 
 class_mapping = {
@@ -48,7 +48,7 @@ def load_data(word2vec_dict):
 
     tables_mapping = dict()
     with open('classes.csv', 'r', encoding='utf-8') as classes_file:
-        content = classes_file.read().split('\n')[1:]
+        content = classes_file.read().split('\n')[:-1]
         
         for item in content:
             filename, class_str = item.split(',')
@@ -117,7 +117,7 @@ def define_graph(word2vec_embeddings_arr):
     vector_length = 40
     num_classes = 4
     num_lstm = 64
-    num_layers = 1
+    num_layers = 4
 
     dropout_keep_prob = tf.placeholder_with_default(1.0, shape=(), name="dropout_keep_prob")
 

@@ -30,18 +30,33 @@ def clean_table(content):
 
 def read_data():
     print("READING DATA")
+
+    # Read classes csv
+    tables_mapping = dict()
+    with open('classes.csv', 'r', encoding='utf-8') as classes_file:
+        content = classes_file.read().split('\n')[:-1]
+        
+        for item in content:
+            filename, class_str = item.split(',')
+            if filename in tables_mapping:
+                print("REPEAT: ", filename)
+            tables_mapping[filename] = class_str
+    print("Parsed %s CSV entries" % len(tables_mapping))
+
     data = []
     dir = os.path.dirname(__file__)
     file_list = glob.glob(os.path.join(dir,
                                         'data/*.html'))
-    #file_list.extend(glob.glob(os.path.join(dir,
-    #                                    'data/neg/*.txt')))
-    print("Parsing %s files" % len(file_list))
+    print("Parsing %s HTML files" % len(file_list))
+    html_files = set()
     for f in file_list:
-        basename = os.path.basename(f)
+        basename = os.path.basename(f) # Only filename.ext part
         filename, ext = os.path.splitext(basename)
+        html_files.add(filename)
+        if filename not in tables_mapping:
+            print('No CSV entry for:', filename, f)
         if not os.path.exists("data/{}.png".format(filename)):
-            print(filename, f)
+            print('No image found for:', filename, f)
         with open(f, "r", encoding='utf-8') as openf:
             s = openf.read()
             s = clean_table(s)
@@ -49,7 +64,22 @@ def read_data():
             s = s.lower()
             data.extend(s.split())
 
-    print(data[:5])
+    file_list = glob.glob(os.path.join(dir,
+                                        'data/*.png'))
+    print("Parsing %s PNG files" % len(file_list))
+    png_files = set()
+    for f in file_list:
+        basename = os.path.basename(f) # Only filename.ext part
+        filename, ext = os.path.splitext(basename)
+        png_files.add(filename)
+
+    csv_files = set(tables_mapping.keys())
+    print('CSV - HTML', csv_files - html_files)
+    print('CSV - PNG', csv_files - png_files)
+    print('HTML - CSV', html_files - csv_files)
+    print('PNG - CSV', png_files - csv_files)
+    print('PNG - HTML', png_files - html_files)
+    print('HTML - PNG', html_files - png_files)
     return data
 
 def build_dataset(words, n_words):
@@ -94,3 +124,6 @@ def get_dataset(vocabulary_size):
         np.save("Word2Idx", dictionary)
         del vocabulary  # Hint to reduce memory.
     return data, count, dictionary, reverse_dictionary, vocabulary_size
+
+if __name__ == "__main__":
+    read_data()
