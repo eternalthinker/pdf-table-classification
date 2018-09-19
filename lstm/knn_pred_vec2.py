@@ -2,13 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from sklearn import neighbors
-from sklearn import datasets
+# from sklearn import datasets
 
 from implementation import class_mapping
 
-n_neighbors = 2
+n_neighbors = 3
 
 # Import data
+print("Importing data..")
 fnames = []
 classes = []
 pred_vecs = []
@@ -22,8 +23,9 @@ with open('pred_vecs.csv', 'r', encoding='utf-8') as pred_vecs_file:
         classes.append(class_mapping[class_name])
         pred_vec_n = list(map(lambda s: float(s), pred_vec))
         pred_vecs.append(pred_vec_n)
+print("Data imported")
 
-iris = datasets.load_iris()
+# iris = datasets.load_iris()
 # X = iris.data[:, :2]
 # y = iris.target
 X = np.array(pred_vecs)

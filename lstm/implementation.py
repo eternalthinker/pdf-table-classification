@@ -117,7 +117,7 @@ def define_graph(word2vec_embeddings_arr):
     vector_length = 40
     num_classes = 4
     num_lstm = 64
-    num_layers = 4
+    num_layers = 1
 
     dropout_keep_prob = tf.placeholder_with_default(1.0, shape=(), name="dropout_keep_prob")
 

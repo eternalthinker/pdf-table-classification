@@ -7,7 +7,7 @@ import os
 import implementation as imp
 
 batch_size = imp.batch_size
-iterations = 2000
+iterations = 600
 seq_length = 40  # Maximum length of sentence
 reverse_class_mapping = imp.reverse_class_mapping
 
@@ -50,6 +50,7 @@ def getNextTrainBatch(offset, batch_size):
     arr = np.zeros([batch_size, seq_length])
     for i in range(batch_size):
         num = offset + i
+        print("index:", num)
         label = [0, 0, 0, 0]
         label[training_classes[num]] = 1
         labels.append(label)
@@ -183,7 +184,8 @@ for result in results:
 print("\n ============ Analyse all training data")
 num_batches = len(training_data) // batch_size
 output_lines = []
-for offset in range(num_batches):
+for batch_num in range(num_batches):
+    offset = batch_num * batch_size
     batch_data, batch_labels, batch_fnames = getNextTrainBatch(offset, batch_size)
     sess.run(optimizer, {input_data: batch_data, labels: batch_labels, dropout_keep_prob: 1.0})
     loss_value, accuracy_value, summary, predictions, pred_classes, pred_probs = sess.run(
