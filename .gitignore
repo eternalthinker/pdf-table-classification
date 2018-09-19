@@ -4,6 +4,8 @@ data/
 tensorboard/
 output/
 *.png
+log.txt
+test.html
 
 ### Code ###
 # Visual Studio Code - https://code.visualstudio.com/

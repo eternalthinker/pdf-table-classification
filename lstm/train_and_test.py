@@ -50,7 +50,7 @@ def getNextTrainBatch(offset, batch_size):
     arr = np.zeros([batch_size, seq_length])
     for i in range(batch_size):
         num = offset + i
-        print("index:", num)
+        # print("index:", num)
         label = [0, 0, 0, 0]
         label[training_classes[num]] = 1
         labels.append(label)

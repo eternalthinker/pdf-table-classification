@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 
 from implementation import class_mapping
+from test_row_split import generate_row_similarity
 
 
 # Import data
@@ -36,10 +37,10 @@ def get_neighbours(clf, query_x):
 
 if __name__ == "__main__":
     X, y, fnames = load_data()
-    for i, item in enumerate(fnames):
-        print(i, item)
     clf = train_clf(X, y)
-    ds, indices = get_neighbours(clf, X[2].reshape(1, -1))
+    ds, indices = get_neighbours(clf, X[3].reshape(1, -1))
     print(indices, ds)
     for i in indices[0]:
         print(i, fnames[i])
+    generate_row_similarity(fnames, indices[0])
+
