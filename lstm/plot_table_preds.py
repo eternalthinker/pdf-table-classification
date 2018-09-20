@@ -30,21 +30,26 @@ def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
 
     plt.figure(figsize=(14, 9))  # in inches
     colors = ['r', 'g', 'b', 'orange']
+    legends = set()
     for i, label in enumerate(labels):
         x, y = low_dim_embs[i, :]
-        plt.scatter(x, y, c=colors[class_mapping[label]])
-        plt.annotate(label,
-                     xy=(x, y),
-                     xytext=(5, 2),
-                     textcoords='offset points',
-                     ha='right',
-                     va='bottom')
+        plt.scatter(x, y, c=colors[class_mapping[label]], label=label)
+        # plt.annotate(label,
+        #              xy=(x, y),
+        #              xytext=(5, 2),
+        #              textcoords='offset points',
+        #              ha='right',
+        #              va='bottom')
+        if label not in legends:
+            print('#',label,'#')
+            legends.add(label)
+            plt.legend()
 
     plt.savefig(filename)
     print("plots saved in {0}".format(filename))
 
 if __name__ == "__main__":
-    tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000) #, method='exact')
+    tsne = TSNE(perplexity=10, n_components=2, init='pca', n_iter=5000)#, method='exact')
     plot_only = len(X) #len(reverse_dictionary)
     low_dim_embs = tsne.fit_transform(X[:plot_only, :])
     labels = [reverse_class_mapping[i] for i in y[:plot_only]]

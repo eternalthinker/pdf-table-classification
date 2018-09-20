@@ -79,6 +79,13 @@ def generate_row_similarity(fnames, neighbours_idxs):
     neigh.fit(rows_embed)
 
     with open("test.html", "w") as html:
+        html.write('''
+            <style>
+                tr:first-child {
+                    background: yellow;
+                }
+            </style>
+        ''')
         for row_idx in range(1, 10):
             query = np.array(rows_embed[row_idx]).reshape(1, -1)
             dist, ind = find_similar_rows(neigh, query)

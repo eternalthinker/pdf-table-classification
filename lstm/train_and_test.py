@@ -7,7 +7,7 @@ import os
 import implementation as imp
 
 batch_size = imp.batch_size
-iterations = 600
+iterations = 3000
 seq_length = 40  # Maximum length of sentence
 reverse_class_mapping = imp.reverse_class_mapping
 
@@ -42,6 +42,20 @@ def getTrainBatch():
         labels.append(label)
         arr[i] = training_data[num]
         fnames.append(training_fnames[num])
+    return arr, labels, fnames
+
+def getNextOriginalBatch(offset, batch_size):
+    labels = []
+    fnames = []
+    arr = np.zeros([batch_size, seq_length])
+    for i in range(batch_size):
+        num = offset + i
+        # print("index:", num)
+        label = [0, 0, 0, 0]
+        label[original_classes[num]] = 1
+        labels.append(label)
+        arr[i] = original_data[num]
+        fnames.append(original_fnames[num])
     return arr, labels, fnames
 
 def getNextTrainBatch(offset, batch_size):
@@ -87,6 +101,9 @@ def getNextTestBatch(offset, batch_size):
 # Call implementation
 word2vec_array, word2vec_dict = imp.load_word2vec_embeddings()
 training_data, training_classes, training_fnames = imp.load_data(word2vec_dict)
+original_data = training_data[:, :]
+original_classes = training_classes[:]
+original_fnames = training_fnames[:]
 training_data, training_classes, training_fnames, validation_data, validation_classes, validation_fnames = \
     validation_split(0.2)
 input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, \
@@ -176,11 +193,13 @@ for result in results:
     img = Image.open(f)
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("arial.ttf", 16)
-    draw.text((0, 0), result[2], (255, 0, 0), font=font)
+    color = (255, 0, 0)
+    if result[1] == result[2]:
+        color = (0, 255, 0)
+    draw.text((0, 0), result[2], color, font=font)
     img.save(of)
 
 
-# Get all training distances
 print("\n ============ Analyse all training data")
 num_batches = len(training_data) // batch_size
 output_lines = []
