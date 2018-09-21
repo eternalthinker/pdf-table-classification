@@ -38,7 +38,7 @@ def get_neighbours(clf, query_x):
 if __name__ == "__main__":
     X, y, fnames = load_data()
     clf = train_clf(X, y)
-    ds, indices = get_neighbours(clf, X[6].reshape(1, -1))
+    ds, indices = get_neighbours(clf, X[2].reshape(1, -1))
     print(indices, ds)
     for i in indices[0]:
         print(i, fnames[i])

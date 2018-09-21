@@ -86,7 +86,7 @@ def generate_row_similarity(fnames, neighbours_idxs):
                 }
             </style>
         ''')
-        for row_idx in range(1, 10):
+        for row_idx in range(1, 15):
             query = np.array(rows_embed[row_idx]).reshape(1, -1)
             dist, ind = find_similar_rows(neigh, query)
 
