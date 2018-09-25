@@ -95,6 +95,19 @@ def get_style(part_fname):
         style = str(style_tags[0])
         return style
 
+def render_table(table_template, fname, script):
+    table_config = {
+        'table': dict()
+    }
+    style = get_style(fname)
+    table_config['table']['style'] = style or ""
+    table_config['table']['script'] = script
+    f = os.path.join('data', '{}.html'.format(fname))
+    with open(f, 'r', encoding='utf-8') as openf:
+        table_config['table']['content'] = openf.read()
+    table = table_template.render(**table_config)
+    return table
+
 def generate_row_similarity(fnames, neighbours_idxs):
     table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed\
       = process_indices(fnames, neighbours_idxs)
@@ -107,33 +120,6 @@ def generate_row_similarity(fnames, neighbours_idxs):
 
     with open("test.html", "w", encoding="utf-8") as html, \
          open("output.html", "w", encoding="utf-8") as output_html:
-        env = Environment(
-            loader=PackageLoader('ui', 'templates'),
-            autoescape=None#select_autoescape(['html'])
-        )
-        table_template = env.get_template('table.html')
-        main_template = env.get_template('index.html')
-
-        query_table_config = {
-            'table': dict()
-        }
-        query_fname = fnames[neighbours_idxs[0]][0]
-        style = get_style(query_fname)
-        query_table_config['table']['style'] = style
-        f = os.path.join('data', '{}.html'.format(query_fname))
-        with open(f, 'r', encoding='utf-8') as openf:
-            query_table_config['table']['content'] = openf.read()
-        query_table = table_template.render(**query_table_config)
-
-        main_config = dict()
-        main_config['query'] = {
-            'table_html': query_table
-        }
-        main_config['neighbours'] = {
-            'js_list': ""
-        }
-        main_html = main_template.render(**main_config)
-        output_html.write(main_html)
 
         html.write('''
             <style>
@@ -162,6 +148,35 @@ def generate_row_similarity(fnames, neighbours_idxs):
                 html.write(str(soup))
             html.write("</table><hr />")
 
+        env = Environment(
+            loader=PackageLoader('ui', 'templates'),
+            autoescape=None#select_autoescape(['html'])
+        )
+        table_template = env.get_template('table.html')
+        main_template = env.get_template('index.html')
+
+        query_table = render_table(table_template, fnames[neighbours_idxs[0]][0], False)
+
+        main_config = dict()
+        main_config['query'] = {
+            'table_html': query_table
+        }
+        neighbour_tables = []
+        neighbour_fnames = []
+        neighbour_indices = neighbours_idxs[1:]
+        for i in neighbour_indices:
+            fname = fnames[i][0]
+            neighbour_table = render_table(table_template, fname, True)
+            neighbour_tables.append({
+                'content': neighbour_table,
+                'fname': fname
+            })
+        neighbour_tables = map(lambda s: { 'fname': s['fname'], 'content': "'{}'".format(s['content']) }, neighbour_tables)
+        main_config['neighbours'] = {
+            'content_list': neighbour_tables
+        }
+        main_html = main_template.render(**main_config)
+        output_html.write(main_html)
 
 
 

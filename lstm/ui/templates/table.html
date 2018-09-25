@@ -1,5 +1,10 @@
 {{ table.style }}
 
+<link rel="stylesheet" type="text/css" href="ui/templates/table.css">
+
 {{ table.content }}
 
-<script type="text/javascript" src="table-control.js"></script>
+{% if table.script %}
+	<script type="text/javascript" src="ui/templates/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="ui/templates/table-control.js"></script>
+{% endif %}
