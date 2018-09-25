@@ -2,6 +2,7 @@ import os
 from bs4 import BeautifulSoup
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 from load_table_data import clean_table
 from implementation import load_word2vec_embeddings
@@ -12,7 +13,7 @@ word2vec_array, word2vec_dict = load_word2vec_embeddings()
 
 
 def log(content):
-    with open("log.txt", "a", encoding="utf-8") as logf:
+    with open("log.txt", "w", encoding="utf-8") as logf:
         logf.write(str(content) + "\n")
 
 def convert_to_embedding(content):
@@ -81,6 +82,19 @@ def add_td(tr_str, td_string):
     new_td_tag.string = td_string
     return soup
 
+def get_style(part_fname):
+    fname = part_fname.split("_")[0]
+    f = os.path.join('full_data', '{}.html'.format(fname))
+    if not os.path.exists(f):
+        print("[!] ----- File {} not found to extract style".format(f))
+        return None
+    with open(f, 'r', encoding='utf-8') as openf:
+        raw_html = openf.read()
+        soup = BeautifulSoup(raw_html, 'html.parser')
+        style_tags = soup.find_all('style')
+        style = str(style_tags[0])
+        return style
+
 def generate_row_similarity(fnames, neighbours_idxs):
     table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed\
       = process_indices(fnames, neighbours_idxs)
@@ -91,7 +105,36 @@ def generate_row_similarity(fnames, neighbours_idxs):
     neigh = NearestNeighbors(n_neighbors=10)
     neigh.fit(rows_embed)
 
-    with open("test.html", "w") as html:
+    with open("test.html", "w", encoding="utf-8") as html, \
+         open("output.html", "w", encoding="utf-8") as output_html:
+        env = Environment(
+            loader=PackageLoader('ui', 'templates'),
+            autoescape=None#select_autoescape(['html'])
+        )
+        table_template = env.get_template('table.html')
+        main_template = env.get_template('index.html')
+
+        query_table_config = {
+            'table': dict()
+        }
+        query_fname = fnames[neighbours_idxs[0]][0]
+        style = get_style(query_fname)
+        query_table_config['table']['style'] = style
+        f = os.path.join('data', '{}.html'.format(query_fname))
+        with open(f, 'r', encoding='utf-8') as openf:
+            query_table_config['table']['content'] = openf.read()
+        query_table = table_template.render(**query_table_config)
+
+        main_config = dict()
+        main_config['query'] = {
+            'table_html': query_table
+        }
+        main_config['neighbours'] = {
+            'js_list': ""
+        }
+        main_html = main_template.render(**main_config)
+        output_html.write(main_html)
+
         html.write('''
             <style>
                 tr:first-child {
@@ -118,6 +161,8 @@ def generate_row_similarity(fnames, neighbours_idxs):
                     soup = add_td(str(soup), "SAME TABLE")
                 html.write(str(soup))
             html.write("</table><hr />")
+
+
 
 
 if __name__ == "__main__":

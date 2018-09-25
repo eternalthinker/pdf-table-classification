@@ -1,4 +1,5 @@
 data/
+full_data/
 *.npy
 *.pkl 
 tensorboard/
@@ -6,6 +7,7 @@ output/
 *.png
 log.txt
 test.html
+output.html
 
 ### Code ###
 # Visual Studio Code - https://code.visualstudio.com/

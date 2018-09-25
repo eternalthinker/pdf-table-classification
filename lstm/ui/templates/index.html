@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="index.css" />
+    <title>Table Query</title>
+</head>
+<body>
+    <div id="query-table">
+        {{ query.table_html }}
+    </div>
+    <iframe id="neighbour-table"></iframe>
+
+    <script type="text/javascript">
+        const neighbours = [ 
+            {{ neighbours.js_list }} 
+        ];
+    </script>
+    <script type="text/javascript" src="index.js"></script>
+</body>
+</html>
