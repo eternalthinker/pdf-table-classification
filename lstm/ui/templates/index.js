@@ -9,6 +9,16 @@ $(document).ready(function() {
 
     curRow = rowIdx;
     $(`tr:eq(${rowIdx})`).css("background", "yellow");
+
+  };
+
+  const selectNRow = (rowIdx) => {
+    if(curRow !== null) {
+      $($(`#neighbour-table`).get(0).contentWindow.document).find(`tr:eq(${curRow})`).css("background", "none");
+    }
+
+    curRow = rowIdx;
+    $($(`#neighbour-table`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).css("background", "yellow");
   };
 
   const neighbourTableContent = $("textarea:eq(1)").val();  
@@ -17,8 +27,8 @@ $(document).ready(function() {
   $("tr").click(function() {
     const i = $("tr").index($(this));
     selectRow(i);
+    selectNRow(i);
     const el = document.getElementById("neighbour-table").contentWindow;
-    console.log(el);
   });
 
 });

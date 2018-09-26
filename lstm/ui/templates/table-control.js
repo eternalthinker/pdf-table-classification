@@ -10,13 +10,11 @@ function selectRow (rowIdx) {
 }
 
 selectRow(3);*/
-
-$(document).ready(function() {
-    console.log("dsdsd")
-
+/*$(document).ready(function() {
   let curRow = null;
 
   const selectRow = (rowIdx) => {
+    console.log($(`tr:eq(${rowIdx})`));
     if(curRow !== null) {
       $(`tr:eq(${curRow})`).css("background", "none");
     }
@@ -25,14 +23,11 @@ $(document).ready(function() {
     $(`tr:eq(${rowIdx})`).css("background", "yellow");
   };
 
-  const neighbourTableContent = $("textarea:eq(1)").val();  
-  $("#neighbour-table").contents().find('html').html(neighbourTableContent);
-
   $("tr").click(function() {
     const i = $("tr").index($(this));
     console.log(i);
     selectRow(i);
   });
 
-});
+});*/
 
