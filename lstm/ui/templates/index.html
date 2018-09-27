@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="ui/templates/index.css" />
+    <link rel="stylesheet" href="ui/templates/css/index.css" />
+    <link rel="stylesheet" href="ui/templates/css/bootstrap.min.css" />
     <title>Table Query</title>
 </head>
 <body>
     <div id="query-table">
         {{ query.table_html }}
     </div>
-    <iframe width="1000" height="400" id="neighbour-table"></iframe>
+    <!-- <iframe width="1000" height="400" id="neighbour-table"></iframe> -->
+    <div id="frame-container"></div>
 
     {% for item in neighbours.content_list %}
         <textarea class="hidden" id="{{ item['fname'] }}">{{ item['content'] }}</textarea>
     {% endfor %}
     
-    <script type="text/javascript" src="ui/templates/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="ui/templates/index.js"></script>
+    <script type="text/javascript">
+        const neighbourFnames = {{ neighbours.fnames }};
+        const rowSimMap = {{ query.row_sim_map }};
+    </script>
+
+    <script type="text/javascript" src="ui/templates/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="ui/templates/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="ui/templates/js/index.js"></script>
 </body>
 </html>

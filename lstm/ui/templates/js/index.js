@@ -21,15 +21,27 @@ $(document).ready(function() {
     $($(`#neighbour-table`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).css("background", "yellow");
   };
 
-  const neighbourTableContent = $("textarea:eq(1)").val();  
-  $("#neighbour-table").contents().find('html').html(neighbourTableContent);
-
   $("tr").click(function() {
     const i = $("tr").index($(this));
     selectRow(i);
     selectNRow(i);
     const el = document.getElementById("neighbour-table").contentWindow;
   });
+
+  /* ---- Init steps ---- */
+  neighbourFnames.forEach(fname => {
+    let $iframe = $("<iframe>", {
+      id: `frame_${fname}`, 
+      width: 1000,
+      height: 400
+    });
+    const neighbourTableContent = $(`#${fname}`).val(); 
+    $iframe.css("display", "none");
+    $("#frame-container").append($iframe);
+    $iframe.contents().find('html').html(neighbourTableContent);
+  });
+  //$("#neighbour-table").contents().find('html').html(neighbourTableContent);
+  $(`#frame_${neighbourFnames[0]}`).css("display", "block");
 
 });
 
