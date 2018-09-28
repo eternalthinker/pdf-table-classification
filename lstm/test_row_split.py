@@ -68,7 +68,7 @@ def process_indices(fnames, indices):
             for j in range(len(t_rows_orig)):
                 table_to_rows_map[fname].add(i)
                 row_to_table_map[i] = fname
-                subrows.append(j+1)
+                subrows.append(j)
                 i += 1
     return table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts
 
@@ -136,9 +136,14 @@ def generate_row_similarity(fnames, neighbours_idxs):
         for row_idx in range(row_counts[0]):
             query = np.array(rows_embed[row_idx]).reshape(1, -1)
             dist, ind = find_similar_rows(neigh, query)
-            row_sim_map[row_idx] = ind[0].tolist()
+            ind_neighbours = filter(lambda i: row_to_table_map[i] != fnames[neighbours_idxs[0]][0], ind[0])
+            row_sim_map[row_idx] = list(map(lambda i: {
+                'fname': row_to_table_map[i],
+                'row': subrows[i]
+            }, ind_neighbours))
+            print('#####\n', row_idx, row_sim_map[row_idx])
 
-            print(dist, ind)
+            # print(dist, ind)
             html.write("<table>")
             # html.write(rows_orig[row_idx])
             soup = add_td(rows_orig[row_idx], "Table: {}, Row: {}".format(row_to_table_map[row_idx], subrows[row_idx]))

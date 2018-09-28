@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
   let curRow = null;
+  let neighbourTables = {};
 
   const selectRow = (rowIdx) => {
     if(curRow !== null) {
@@ -12,24 +13,37 @@ $(document).ready(function() {
 
   };
 
-  const selectNRow = (rowIdx) => {
-    if(curRow !== null) {
-      $($(`#neighbour-table`).get(0).contentWindow.document).find(`tr:eq(${curRow})`).css("background", "none");
-    }
+  const clearNRows = () => {
+    neighbourFnames.forEach(fname => {
+      neighbourTables[fname].curRows.forEach(curRow => {
+        $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`).css("background", "none");
+      });
+    });
+  };
 
-    curRow = rowIdx;
-    $($(`#neighbour-table`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).css("background", "yellow");
+  const selectNRow = (fname, rowIdx) => {
+    neighbourTables[fname].curRows.push(rowIdx);
+    $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).css("background", "yellow");
   };
 
   $("tr").click(function() {
     const i = $("tr").index($(this));
     selectRow(i);
-    selectNRow(i);
-    const el = document.getElementById("neighbour-table").contentWindow;
+    clearNRows();
+    const simRows = rowSimMap[i];
+    console.log(i, "--->")
+    simRows.forEach(rowInfo => {
+      console.log(rowInfo)
+      selectNRow(rowInfo.fname, rowInfo.row);
+    });
+    //const el = document.getElementById("neighbour-table").contentWindow;
   });
 
   /* ---- Init steps ---- */
   neighbourFnames.forEach(fname => {
+    neighbourTables[fname] = {
+      curRows: []
+    };
     let $iframe = $("<iframe>", {
       id: `frame_${fname}`, 
       width: 1000,
