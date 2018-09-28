@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
   let curRow = null;
+  let curNeighbour = 0;
   let neighbourTables = {};
 
   const selectRow = (rowIdx) => {
@@ -26,6 +27,12 @@ $(document).ready(function() {
     $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).addClass("highlight-selected");
   };
 
+  const showNeighbour = (i) => {
+    $(`#frame_${neighbourFnames[curNeighbour]}`).css("display", "none");
+    curNeighbour = i;
+    $(`#frame_${neighbourFnames[curNeighbour]}`).css("display", "block");
+  };
+
   $("tr").click(function() {
     const i = $("tr").index($(this));
     selectRow(i);
@@ -37,6 +44,22 @@ $(document).ready(function() {
     //const el = document.getElementById("neighbour-table").contentWindow;
   });
 
+  $("#prev-table").click(() => {
+    let prevNeighbour = curNeighbour - 1;
+    if (curNeighbour === 0) {
+      prevNeighbour = neighbourFnames.length - 1;
+    }
+    showNeighbour(prevNeighbour);
+  });
+
+  $("#next-table").click(() => {
+    let nextNeighbour = curNeighbour + 1;
+    if (curNeighbour === neighbourFnames.length - 1) {
+      nextNeighbour = 0;
+    }
+    showNeighbour(nextNeighbour);
+  });
+
   /* ---- Init steps ---- */
   neighbourFnames.forEach(fname => {
     neighbourTables[fname] = {
@@ -44,8 +67,9 @@ $(document).ready(function() {
     };
     let $iframe = $("<iframe>", {
       id: `frame_${fname}`, 
-      width: 1000,
-      height: 400
+      width: 800,
+      height: 400,
+      frameBorder: 0
     });
     const neighbourTableContent = $(`#${fname}`).val(); 
     $iframe.css("display", "none");

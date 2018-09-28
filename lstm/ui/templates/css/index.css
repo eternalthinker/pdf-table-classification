@@ -12,3 +12,7 @@ tr.highlight-selected:hover {
 	background: orange;
 	border: 2px dashed orangered;
 }
+
+.top-gap {
+	margin-top: 20px;
+}

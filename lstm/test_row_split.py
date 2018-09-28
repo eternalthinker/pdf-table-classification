@@ -183,7 +183,7 @@ def generate_row_similarity(fnames, neighbours_idxs):
                 'content': neighbour_table,
                 'fname': fname
             })
-        neighbour_tables = map(lambda s: { 'fname': s['fname'], 'content': "'{}'".format(s['content']) }, neighbour_tables)
+        #neighbour_tables = map(lambda s: { 'fname': s['fname'], 'content': "{}".format(s['content']) }, neighbour_tables)
         main_config['neighbours'] = {
             'content_list': neighbour_tables,
             'fnames': json.dumps(neighbour_fnames)
