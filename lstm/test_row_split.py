@@ -141,7 +141,6 @@ def generate_row_similarity(fnames, neighbours_idxs):
                 'fname': row_to_table_map[i],
                 'row': subrows[i]
             }, ind_neighbours))
-            print('#####\n', row_idx, row_sim_map[row_idx])
 
             # print(dist, ind)
             html.write("<table>")

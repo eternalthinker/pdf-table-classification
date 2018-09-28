@@ -31,9 +31,7 @@ $(document).ready(function() {
     selectRow(i);
     clearNRows();
     const simRows = rowSimMap[i];
-    console.log(i, "--->")
     simRows.forEach(rowInfo => {
-      console.log(rowInfo)
       selectNRow(rowInfo.fname, rowInfo.row);
     });
     //const el = document.getElementById("neighbour-table").contentWindow;
