@@ -5,25 +5,25 @@ $(document).ready(function() {
 
   const selectRow = (rowIdx) => {
     if(curRow !== null) {
-      $(`tr:eq(${curRow})`).css("background", "none");
+      $(`tr:eq(${curRow})`).removeClass("highlight-selected");
     }
 
     curRow = rowIdx;
-    $(`tr:eq(${rowIdx})`).css("background", "yellow");
+    $(`tr:eq(${rowIdx})`).addClass("highlight-selected");
 
   };
 
   const clearNRows = () => {
     neighbourFnames.forEach(fname => {
       neighbourTables[fname].curRows.forEach(curRow => {
-        $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`).css("background", "none");
+        $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`).removeClass("highlight-selected");
       });
     });
   };
 
   const selectNRow = (fname, rowIdx) => {
     neighbourTables[fname].curRows.push(rowIdx);
-    $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).css("background", "yellow");
+    $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).addClass("highlight-selected");
   };
 
   $("tr").click(function() {

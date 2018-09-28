@@ -2,3 +2,13 @@
 .hidden {
 	display: none;
 }
+
+tr:hover {
+	background: red;
+	border: 2px dashed red;
+}
+
+tr.highlight-selected:hover {
+	background: orange;
+	border: 2px dashed orangered;
+}

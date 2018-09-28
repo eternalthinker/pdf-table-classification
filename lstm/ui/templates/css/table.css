@@ -1,3 +1,6 @@
-tr:hover {
-	background: red;
+
+.highlight-selected {
+	background: yellow;
+	border: 2px dashed brown;
 }
+
