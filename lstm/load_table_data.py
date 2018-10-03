@@ -37,7 +37,7 @@ def read_data():
         content = classes_file.read().split('\n')[:-1]
         
         for item in content:
-            filename, class_str = item.split(',')
+            filename, class_str, company = item.split(',')
             if filename in tables_mapping:
                 print("REPEAT: ", filename)
             tables_mapping[filename] = class_str

@@ -51,7 +51,7 @@ def load_data(word2vec_dict):
         content = classes_file.read().split('\n')[:-1]
         
         for item in content:
-            filename, class_str = item.split(',')
+            filename, class_str, company = item.split(',')
             tables_mapping[filename] = class_mapping[class_str]
 
     for fname, table_class in tables_mapping.items():
