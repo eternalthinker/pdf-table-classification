@@ -68,7 +68,7 @@ $(document).ready(function() {
     let $iframe = $("<iframe>", {
       id: `frame_${fname}`, 
       width: 800,
-      height: 400,
+      height: 800,
       frameBorder: 0
     });
     const neighbourTableContent = $(`#${fname}`).val(); 

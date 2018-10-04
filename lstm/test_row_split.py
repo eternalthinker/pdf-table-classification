@@ -98,13 +98,16 @@ def get_style(part_fname):
         style = str(style_tags[0])
         return style
 
-def render_table(table_template, fname, script):
+def render_table(table_template, fname, class_str, company, script):
     table_config = {
-        'table': dict()
+        'table': {
+            'script': script,
+            'class_str': class_str,
+            'company': company
+        }
     }
     style = get_style(fname)
     table_config['table']['style'] = style or ""
-    table_config['table']['script'] = script
     f = os.path.join('data', '{}.html'.format(fname))
     with open(f, 'r', encoding='utf-8') as openf:
         table_config['table']['content'] = openf.read()
@@ -165,7 +168,8 @@ def generate_row_similarity(fnames, neighbours_idxs):
         table_template = env.get_template('table.html')
         main_template = env.get_template('index.html')
 
-        query_table = render_table(table_template, fnames[neighbours_idxs[0]][0], False)
+        fname, class_str, company = fnames[neighbours_idxs[0]]
+        query_table = render_table(table_template, fname, class_str, company, False, )
 
         main_config = dict()
         main_config['query'] = {
@@ -176,9 +180,9 @@ def generate_row_similarity(fnames, neighbours_idxs):
         neighbour_fnames = []
         neighbour_indices = neighbours_idxs[1:]
         for i in neighbour_indices:
-            fname = fnames[i][0]
+            fname, class_str, company = fnames[i]
             neighbour_fnames.append(fname)
-            neighbour_table = render_table(table_template, fname, True)
+            neighbour_table = render_table(table_template, fname, class_str, company, True)
             neighbour_tables.append({
                 'content': neighbour_table,
                 'fname': fname

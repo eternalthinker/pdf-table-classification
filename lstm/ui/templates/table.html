@@ -1,7 +1,12 @@
 {{ table.style }}
 
 <link rel="stylesheet" type="text/css" href="ui/templates/css/table.css">
+<link rel="stylesheet" href="ui/templates/css/bootstrap.min.css" />
 
+<p>
+	<span class="badge badge-secondary">{{ table.class_str }}</span>
+	<span class="badge badge-info">{{ table.company }}</span>
+</p>
 {{ table.content }}
 
 {% if table.script %}

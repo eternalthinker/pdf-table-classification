@@ -4,13 +4,21 @@
 }
 
 tr:hover {
-	background: red;
-	border: 2px dashed red;
+	background: rgb(240, 95, 95) !important;
+	border: 2px solid rgb(88, 24, 24) !important;
 }
 
 tr.highlight-selected:hover {
-	background: orange;
-	border: 2px dashed orangered;
+	background: rgb(241, 158, 2) !important;
+	border: 2px solid rgb(109, 42, 17) !important;
+}
+
+tr:hover, tr:hover td, tr:hover p {
+	background: rgb(240, 95, 95) !important;
+}
+
+tr.highlight-selected:hover, tr.highlight-selected:hover td, tr.highlight-selected:hover p {
+	background: rgb(241, 158, 2) !important;
 }
 
 .top-gap {
