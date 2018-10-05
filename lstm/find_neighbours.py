@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 
-from implementation import class_mapping
+from implementation import compound_class_mapping
 from test_row_split import generate_row_similarity
 
 
@@ -24,7 +24,7 @@ def load_data():
             pred_vec = components[2:]
             company = tables_map[filename][1]
             fnames.append([filename, class_name, company])
-            classes.append(class_mapping[class_name])
+            classes.append(compound_class_mapping[class_name])
             pred_vec_n = list(map(lambda s: float(s), pred_vec))
             pred_vecs.append(pred_vec_n)
 

@@ -163,7 +163,7 @@ def generate_row_similarity(fnames, neighbours_idxs):
 
         env = Environment(
             loader=PackageLoader('ui', 'templates'),
-            autoescape=None#select_autoescape(['html'])
+            autoescape=None #select_autoescape(['html'])
         )
         table_template = env.get_template('table.html')
         main_template = env.get_template('index.html')

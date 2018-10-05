@@ -22,6 +22,25 @@ reverse_class_mapping = dict()
 for class_name, class_num in class_mapping.items():
     reverse_class_mapping[class_num] = class_name
 
+def load_compound_class_mapping():
+    compound_class_mapping = dict()
+    running_class_num = 0
+    with open('classes.csv', 'r', encoding='utf-8') as classes_file:
+        content = classes_file.read().split('\n')[:-1]
+        for item in content:
+            filename, class_str, company = item.split(',')
+            compound_class = "{}:{}".format(class_str, company)
+            if compound_class not in compound_class_mapping:
+                compound_class_mapping[compound_class] = running_class_num
+                running_class_num += 1
+    return compound_class_mapping
+
+compound_class_mapping =  load_compound_class_mapping()
+print(compound_class_mapping, len(compound_class_mapping))
+reverse_compound_class_mapping = dict()
+for class_name, class_num in compound_class_mapping.items():
+    reverse_compound_class_mapping[class_num] = class_name
+
 def load_data(word2vec_dict):
     if False: # os.path.exists(os.path.join(os.path.dirname(__file__), "tables.pkl")):
         print("loading pickled vectorized table...")
@@ -32,6 +51,7 @@ def load_data(word2vec_dict):
     data = []
     classes = []
     fnames = []
+    companies = []
     dir = os.path.dirname(__file__)
     file_list = glob.glob(os.path.join(dir, 'data/*.html'))
     i = 0
@@ -52,7 +72,7 @@ def load_data(word2vec_dict):
         
         for item in content:
             filename, class_str, company = item.split(',')
-            tables_mapping[filename] = class_mapping[class_str]
+            tables_mapping[filename] = compound_class_mapping["{}:{}".format(class_str, company)]
 
     for fname, table_class in tables_mapping.items():
         f = os.path.join('data', '{}.html'.format(fname))
@@ -115,7 +135,7 @@ def load_word2vec_embeddings():
 
 def define_graph(word2vec_embeddings_arr):
     vector_length = 40
-    num_classes = 4
+    num_classes = len(compound_class_mapping)
     num_lstm = 64
     num_layers = 4
 

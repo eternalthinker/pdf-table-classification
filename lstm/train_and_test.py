@@ -9,7 +9,8 @@ import implementation as imp
 batch_size = imp.batch_size
 iterations = 3000
 seq_length = 40  # Maximum length of sentence
-reverse_class_mapping = imp.reverse_class_mapping
+reverse_compound_class_mapping = imp.reverse_compound_class_mapping
+num_classes = len(reverse_compound_class_mapping)
 
 checkpoints_dir = "./checkpoints"
 
@@ -37,7 +38,7 @@ def getTrainBatch():
     arr = np.zeros([batch_size, seq_length])
     for i in range(batch_size):
         num = randint(0, training_data.shape[0]-1)
-        label = [0, 0, 0, 0]
+        label = [0] * num_classes
         label[training_classes[num]] = 1
         labels.append(label)
         arr[i] = training_data[num]
@@ -51,7 +52,7 @@ def getNextOriginalBatch(offset, batch_size):
     for i in range(batch_size):
         num = offset + i
         # print("index:", num)
-        label = [0, 0, 0, 0]
+        label = [0] * num_classes
         label[original_classes[num]] = 1
         labels.append(label)
         arr[i] = original_data[num]
@@ -65,7 +66,7 @@ def getNextTrainBatch(offset, batch_size):
     for i in range(batch_size):
         num = offset + i
         # print("index:", num)
-        label = [0, 0, 0, 0]
+        label = [0] * num_classes
         label[training_classes[num]] = 1
         labels.append(label)
         arr[i] = training_data[num]
@@ -78,7 +79,7 @@ def getTestBatch():
     arr = np.zeros([batch_size, seq_length])
     for i in range(batch_size):
         num = randint(0, validation_data.shape[0]-1)
-        label = [0, 0, 0, 0]
+        label = [0] * num_classes
         label[validation_classes[num]] = 1
         labels.append(label)
         arr[i] = validation_data[num]
@@ -91,7 +92,7 @@ def getNextTestBatch(offset, batch_size):
     arr = np.zeros([batch_size, seq_length])
     for i in range(batch_size):
         num = offset + i
-        label = [0, 0, 0, 0]
+        label = [0] * num_classes
         label[validation_classes[num]] = 1
         labels.append(label)
         arr[i] = validation_data[num]
@@ -104,7 +105,8 @@ training_data, training_classes, training_fnames = imp.load_data(word2vec_dict)
 original_data = training_data[:, :]
 original_classes = training_classes[:]
 original_fnames = training_fnames[:]
-training_data, training_classes, training_fnames, validation_data, validation_classes, validation_fnames = \
+training_data, training_classes, training_fnames, \
+validation_data, validation_classes, validation_fnames = \
     validation_split(0.2)
 input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, \
     prediction, correct_pred, pred_class, pred_prob = \
@@ -175,7 +177,7 @@ for i in range(len(pred_classes)):
     pred_class_num = pred_classes[i]
     fname = batch_fnames[i]
     batch_class, _ = max(enumerate(batch_label), key=lambda x: x[1])
-    results.append((fname, reverse_class_mapping[batch_class], reverse_class_mapping[pred_class_num]))
+    results.append((fname, reverse_compound_class_mapping[batch_class], reverse_compound_class_mapping[pred_class_num]))
 print("Results", results)
 
 from PIL import Image
@@ -215,7 +217,7 @@ for batch_num in range(num_batches):
     batch_classes = []
     for batch_label in batch_labels:
         batch_class, _ = max(enumerate(batch_label), key=lambda x: x[1])
-        batch_classes.append(reverse_class_mapping[batch_class])
+        batch_classes.append(reverse_compound_class_mapping[batch_class])
     for i in range(batch_size):
         pred_strs = list(map(lambda n: str(n), pred_probs[i].tolist()))
         output_line_batch[i] = [output_line_batch[i]] + [batch_classes[i]] + pred_strs
