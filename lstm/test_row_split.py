@@ -2,7 +2,7 @@ import os
 from bs4 import BeautifulSoup
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
 import json
 
 from load_table_data import clean_table
@@ -162,7 +162,8 @@ def generate_row_similarity(fnames, neighbours_idxs):
             html.write("</table><hr />")
 
         env = Environment(
-            loader=PackageLoader('ui', 'templates'),
+            # loader=PackageLoader('static', 'ui', 'templates'),
+            loader = FileSystemLoader(searchpath="./static/ui/templates/"),
             autoescape=None #select_autoescape(['html'])
         )
         table_template = env.get_template('table.html')
@@ -194,6 +195,7 @@ def generate_row_similarity(fnames, neighbours_idxs):
         }
         main_html = main_template.render(**main_config)
         output_html.write(main_html)
+        return main_html
 
 
 
