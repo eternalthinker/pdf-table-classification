@@ -17,14 +17,23 @@ $(document).ready(function() {
   const clearNRows = () => {
     neighbourFnames.forEach(fname => {
       neighbourTables[fname].curRows.forEach(curRow => {
-        $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`).removeClass("highlight-selected");
+        $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`)
+          .removeAttr('title')
+          .removeClass("highlight-selected")
+          .removeClass("highlight2-selected");
       });
     });
   };
 
-  const selectNRow = (fname, rowIdx) => {
+  const selectNRow = (fname, rowIdx, dist) => {
     neighbourTables[fname].curRows.push(rowIdx);
-    $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`).addClass("highlight-selected");
+    let $selectedRow = $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`);
+    if (dist < 100) {
+      $selectedRow.addClass("highlight-selected");
+    } else if (dist < 200) {
+      $selectedRow.addClass("highlight2-selected");
+    }
+    $selectedRow.attr('title', `${dist}`);
   };
 
   const showNeighbour = (i) => {
@@ -39,7 +48,7 @@ $(document).ready(function() {
     clearNRows();
     const simRows = rowSimMap[i];
     simRows.forEach(rowInfo => {
-      selectNRow(rowInfo.fname, rowInfo.row);
+      selectNRow(rowInfo.fname, rowInfo.row, rowInfo.dist);
     });
     //const el = document.getElementById("neighbour-table").contentWindow;
   });
@@ -60,6 +69,11 @@ $(document).ready(function() {
     showNeighbour(nextNeighbour);
   });
 
+  $('#queryTableIdx').on('change', function() {
+    $('.loading').css('visibility', 'visible');
+    $(this).closest('form').submit();
+  });
+
   /* ---- Init steps ---- */
   neighbourFnames.forEach(fname => {
     neighbourTables[fname] = {
@@ -78,6 +92,6 @@ $(document).ready(function() {
   });
   //$("#neighbour-table").contents().find('html').html(neighbourTableContent);
   $(`#frame_${neighbourFnames[0]}`).css("display", "block");
-
+  $('.loading').css('visibility', 'hidden');
 });
 

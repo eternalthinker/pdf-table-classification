@@ -6,6 +6,7 @@
     <title>Table Query</title>
 </head>
 <body>
+    <div class="loading">Loading&#8230;</div>
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm">
@@ -16,6 +17,25 @@
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div class="navbar-nav">
                             <span class="navbar-brand mb-0 h1">Query table</span>
+                            <form class="form-inline" method="POST" action="/" id="tableQueryForm">
+                                <div class="form-group mb-2">
+                                    <select class="form-control" id="queryTableIdx" name="queryTableIdx"
+                                    >
+                                    <!-- onchange="this.form.submit()" -->
+                                        {% for item in tables.table_list %}
+                                            <option 
+                                                value="{{ loop.index0 }}"
+                                                {% if loop.index0 == tables.cur_table_index %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                {{ item[0] }}--{{ item[1] }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- <button type="submit" class="btn btn-primary mb-2">Search</button> -->
+                            </form>
                         </div>
                     </div>
                 </nav>
@@ -50,6 +70,8 @@
     <script type="text/javascript">
         const neighbourFnames = {{ neighbours.fnames }};
         const rowSimMap = {{ query.row_sim_map }};
+        const tableList = {{ tables.table_list }};
+        const curTableIndex = {{ tables.cur_table_index }};
     </script>
 
     <script type="text/javascript" src="ui/templates/js/jquery-3.3.1.min.js"></script>

@@ -28,22 +28,11 @@ def find_neighbour_tables(table_index):
     ds, indices = neigh.get_neighbours(table_cluster_clf, X[table_index].reshape(1, -1))
     return generate_row_similarity(fnames, indices[0])
  
-# class ReusableForm(Form):
-#     name = TextField('Name:', validators=[validators.required()])
- 
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    # form = ReusableForm(request.form)
- 
-    # # Form Handling
-    # if request.method == 'POST':
-    #     name=request.form['name']
- 
-    #     if form.validate():
-    #         # Save the comment here.
-    #         flash('Hello ' + name)
-    #     else:
-    #         flash('All the form fields are required. ')
+    global cur_table_index
+    if request.method == "POST":
+        cur_table_index = int(request.form['queryTableIdx'])
  
     return find_neighbour_tables(cur_table_index)
  

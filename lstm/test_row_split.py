@@ -115,13 +115,14 @@ def render_table(table_template, fname, class_str, company, script):
     return table
 
 def generate_row_similarity(fnames, neighbours_idxs):
+    cur_table_index = neighbours_idxs[0]
     table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts \
       = process_indices(fnames, neighbours_idxs)
     
     nrows = [len(v) for v in table_to_rows_map.values()]
     avg = sum(nrows) // len(nrows)
 
-    neigh = NearestNeighbors(n_neighbors=10)
+    neigh = NearestNeighbors(n_neighbors=15)
     neigh.fit(rows_embed)
 
     with open("test.html", "w", encoding="utf-8") as html, \
@@ -139,11 +140,13 @@ def generate_row_similarity(fnames, neighbours_idxs):
         for row_idx in range(row_counts[0]):
             query = np.array(rows_embed[row_idx]).reshape(1, -1)
             dist, ind = find_similar_rows(neigh, query)
-            ind_neighbours = filter(lambda i: row_to_table_map[i] != fnames[neighbours_idxs[0]][0], ind[0])
-            row_sim_map[row_idx] = list(map(lambda i: {
-                'fname': row_to_table_map[i],
-                'row': subrows[i]
-            }, ind_neighbours))
+            ind_neighbours_dist = \
+                filter(lambda p: row_to_table_map[p[0]] != fnames[neighbours_idxs[0]][0], zip(ind[0], dist[0]))
+            row_sim_map[row_idx] = list(map(lambda p: {
+                'fname': row_to_table_map[p[0]],
+                'row': subrows[p[0]],
+                'dist': p[1]
+            }, ind_neighbours_dist))
 
             # print(dist, ind)
             html.write("<table>")
@@ -192,6 +195,10 @@ def generate_row_similarity(fnames, neighbours_idxs):
         main_config['neighbours'] = {
             'content_list': neighbour_tables,
             'fnames': json.dumps(neighbour_fnames)
+        }
+        main_config['tables'] = {
+            'table_list': fnames,
+            'cur_table_index': cur_table_index
         }
         main_html = main_template.render(**main_config)
         output_html.write(main_html)
