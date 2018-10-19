@@ -9,12 +9,12 @@
 }
 
 .highlight2-selected {
-	background: rgb(235, 233, 124) !important;
-	border: 2px solid rgb(95, 87, 50) !important;
+	background: rgb(235, 233, 158) !important;
+	border: 2px solid rgb(109, 103, 76) !important;
 }
 
 .highlight2-selected td, .highlight2-selected p {
-	background: rgb(235, 233, 124) !important;
+	background: rgb(235, 233, 158) !important;
 }
 
 

@@ -3,6 +3,10 @@
 	display: none;
 }
 
+.sel-option {
+	background: yellow;
+}
+
 tr:hover {
 	background: rgb(240, 95, 95) !important;
 	border: 2px solid rgb(88, 24, 24) !important;
@@ -23,6 +27,11 @@ tr.highlight-selected:hover, tr.highlight-selected:hover td, tr.highlight-select
 
 .top-gap {
 	margin-top: 20px;
+}
+
+#query-table {
+	max-height: 800px;
+	overflow: scroll;
 }
 
 

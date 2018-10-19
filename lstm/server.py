@@ -14,7 +14,7 @@ app.config['STATIC_FOLDER'] = '.'
 table_cluster_clf = None
 fnames = None
 X = None
-cur_table_index = 11
+cur_table_index = 5
 
 
 def init():

@@ -162,44 +162,64 @@ for i in range(iterations):
 
 # Run on all test data
 print("\n ============ Analyse all validation data")
-batch_data, batch_labels, batch_fnames = getNextTestBatch(0, batch_size)
-sess.run(optimizer, {input_data: batch_data, labels: batch_labels, dropout_keep_prob: 1.0})
-loss_value, accuracy_value, summary, predictions, pred_classes = sess.run(
-    [loss, accuracy, summary_op, prediction, pred_class],
-    {input_data: batch_data,
-     labels: batch_labels})
-print('predictions', predictions)
-print("pred_class", pred_classes)
+all_pred_classes = []
+all_batch_labels = []
+all_pred_labels = []
+all_batch_fnames = []
+overall_accuracy = 0.0
+num_batches = len(validation_data) // batch_size
+for batch_num in range(num_batches):
+    offset = batch_num * batch_size
+    batch_data, batch_labels, batch_fnames = getNextTestBatch(offset, batch_size)
+    sess.run(optimizer, {input_data: batch_data, labels: batch_labels, dropout_keep_prob: 1.0})
+    loss_value, accuracy_value, summary, predictions, pred_classes = sess.run(
+        [loss, accuracy, summary_op, prediction, pred_class],
+        {input_data: batch_data,
+        labels: batch_labels})
+    overall_accuracy += accuracy_value
+    #print('predictions', predictions, type(predictions))
+    #print("pred_class", pred_classes)
+    all_pred_classes += pred_classes.tolist()
+    all_batch_labels += batch_labels
+    pred_labels = (predictions == predictions.max(axis=1, keepdims=True)).astype(int)
+    all_pred_labels += pred_labels.tolist()
+    all_batch_fnames += batch_fnames
 
+print('Overall Accuracy: ', overall_accuracy / (num_batches))
 results = []
-for i in range(len(pred_classes)):
-    batch_label = batch_labels[i]
-    pred_class_num = pred_classes[i]
-    fname = batch_fnames[i]
+all_batch_classes = []
+for i in range(len(all_pred_classes)):
+    batch_label = all_batch_labels[i]
+    pred_class_num = all_pred_classes[i]
+    fname = all_batch_fnames[i]
     batch_class, _ = max(enumerate(batch_label), key=lambda x: x[1])
+    all_batch_classes.append(batch_class)
     results.append((fname, reverse_compound_class_mapping[batch_class], reverse_compound_class_mapping[pred_class_num]))
-print("Results", results)
+#print("Results", results)
 
-from PIL import Image
-from PIL import ImageFont
-from PIL import ImageDraw 
-import glob
 
-files = glob.glob('output/*')
-for f in files:
-    os.remove(f)
 
-for result in results:
-    f = os.path.join('data', '{}.png'.format(result[0]))
-    of = os.path.join('output', '{}.png'.format(result[0]))
-    img = Image.open(f)
-    draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype("arial.ttf", 16)
-    color = (255, 0, 0)
-    if result[1] == result[2]:
-        color = (0, 255, 0)
-    draw.text((0, 0), result[2], color, font=font)
-    img.save(of)
+# # Draw on images
+# from PIL import Image
+# from PIL import ImageFont
+# from PIL import ImageDraw 
+# import glob
+
+# files = glob.glob('output/*')
+# for f in files:
+#     os.remove(f)
+
+# for result in results:
+#     f = os.path.join('data', '{}.png'.format(result[0]))
+#     of = os.path.join('output', '{}.png'.format(result[0]))
+#     img = Image.open(f)
+#     draw = ImageDraw.Draw(img)
+#     font = ImageFont.truetype("arial.ttf", 16)
+#     color = (255, 0, 0)
+#     if result[1] == result[2]:
+#         color = (0, 255, 0)
+#     draw.text((0, 0), result[2], color, font=font)
+#     img.save(of)
 
 
 print("\n ============ Analyse all training data")
@@ -229,6 +249,90 @@ with open("pred_vecs.csv", "w") as pred_vecs:
         pred_vecs.write(line_str + "\n")
 
 sess.close()
+
+
+def tf_f1_score(y_true, y_pred):
+    """Computes 3 different f1 scores, micro macro
+    weighted.
+    micro: f1 score accross the classes, as 1
+    macro: mean of f1 scores per class
+    weighted: weighted average of f1 scores per class,
+            weighted from the support of each class
+
+
+    Args:
+        y_true (Tensor): labels, with shape (batch, num_classes)
+        y_pred (Tensor): model's predictions, same shape as y_true
+
+    Returns:
+        tuple(Tensor): (micro, macro, weighted)
+                    tuple of the computed f1 scores
+    """
+
+    f1s = [0, 0, 0]
+
+    y_true = tf.cast(y_true, tf.float64)
+    y_pred = tf.cast(y_pred, tf.float64)
+
+    for i, axis in enumerate([None, 0]):
+        TP = tf.count_nonzero(y_pred * y_true, axis=axis)
+        FP = tf.count_nonzero(y_pred * (y_true - 1), axis=axis)
+        FN = tf.count_nonzero((y_pred - 1) * y_true, axis=axis)
+
+        precision = TP / (TP + FP)
+        recall = TP / (TP + FN)
+        f1 = 2 * precision * recall / (precision + recall)
+
+        f1s[i] = tf.reduce_mean(f1)
+
+    weights = tf.reduce_sum(y_true, axis=0)
+    weights /= tf.reduce_sum(weights)
+
+    f1s[2] = tf.reduce_sum(f1 * weights)
+
+    micro, macro, weighted = f1s
+    return micro, macro, weighted
+
+tf.reset_default_graph()
+y_true = tf.Variable(all_batch_labels)
+y_pred = tf.Variable(all_pred_labels)
+micro, macro, weighted = tf_f1_score(y_true, y_pred)
+with tf.Session() as sess:
+    tf.global_variables_initializer().run(session=sess)
+    mic, mac, wei = sess.run([micro, macro, weighted])
+    print('micro: {:.8f}\nmacro: {:.8f}\nweighted: {:.8f}'.format(
+        mic, mac, wei
+    ))
+
+
+from sklearn.metrics import f1_score, precision_score, recall_score
+
+labels = np.array(all_batch_labels, int)
+predictions = np.array(all_pred_labels, int)
+
+print("F1 score")
+mic = f1_score(labels, predictions, average='micro')
+mac = f1_score(labels, predictions, average='macro')
+wei = f1_score(labels, predictions, average='weighted')
+print('micro: {:.8f}\nmacro: {:.8f}\nweighted: {:.8f}'.format(
+    mic, mac, wei
+))
+
+print("Precision")
+mic = precision_score(labels, predictions, average='micro')
+mac = precision_score(labels, predictions, average='macro')
+wei = precision_score(labels, predictions, average='weighted')
+print('micro: {:.8f}\nmacro: {:.8f}\nweighted: {:.8f}'.format(
+    mic, mac, wei
+))
+
+print("Recall")
+mic = recall_score(labels, predictions, average='micro')
+mac = recall_score(labels, predictions, average='macro')
+wei = recall_score(labels, predictions, average='weighted')
+print('micro: {:.8f}\nmacro: {:.8f}\nweighted: {:.8f}'.format(
+    mic, mac, wei
+))
 
 # Run validation
 # print("\nRunning validation ==============")

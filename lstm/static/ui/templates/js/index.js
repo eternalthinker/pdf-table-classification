@@ -28,9 +28,9 @@ $(document).ready(function() {
   const selectNRow = (fname, rowIdx, dist) => {
     neighbourTables[fname].curRows.push(rowIdx);
     let $selectedRow = $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`);
-    if (dist < 100) {
+    if (dist < 10) {
       $selectedRow.addClass("highlight-selected");
-    } else if (dist < 200) {
+    } else if (dist < 100) {
       $selectedRow.addClass("highlight2-selected");
     }
     $selectedRow.attr('title', `${dist}`);

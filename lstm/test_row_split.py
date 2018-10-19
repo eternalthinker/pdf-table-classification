@@ -9,7 +9,7 @@ from load_table_data import clean_table
 from implementation import load_word2vec_embeddings
 
 
-MAX_WORDS = 10
+MAX_WORDS = 7
 word2vec_array, word2vec_dict = load_word2vec_embeddings()
 
 
