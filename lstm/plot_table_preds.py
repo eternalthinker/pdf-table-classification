@@ -3,7 +3,7 @@ import matplotlib
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
-from implementation import class_mapping, reverse_class_mapping
+from implementation import compound_class_mapping as class_mapping, reverse_compound_class_mapping as reverse_class_mapping
 
 
 # Import data
@@ -29,11 +29,23 @@ def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
     assert low_dim_embs.shape[0] >= len(labels), 'More labels than embeddings'
 
     plt.figure(figsize=(14, 9))  # in inches
-    colors = ['r', 'g', 'b', 'orange']
+    colors = ['r', 'g', 'b', 'orange', 'grey']
+
+    def get_color(label):
+        company = label.split(':')[1]
+        c_idx = {
+            'AGL': 0,
+            'APA': 1,
+            'CSL': 2,
+            'RMD': 3,
+            'TLS': 4
+        }[company]
+        return colors[c_idx]
+
     legends = set()
     for i, label in enumerate(labels):
         x, y = low_dim_embs[i, :]
-        plt.scatter(x, y, c=colors[class_mapping[label]], label=label)
+        plt.scatter(x, y, c=get_color(label), label=label) # c=colors[class_mapping[label]], label=label)
         # plt.annotate(label,
         #              xy=(x, y),
         #              xytext=(5, 2),

@@ -4,7 +4,7 @@ from matplotlib.colors import ListedColormap
 from sklearn import neighbors
 # from sklearn import datasets
 
-from implementation import class_mapping
+from implementation import compound_class_mapping as class_mapping
 
 n_neighbors = 3
 

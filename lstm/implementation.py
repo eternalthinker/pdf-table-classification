@@ -109,12 +109,14 @@ def load_data(word2vec_dict):
     return data, classes, fnames
 
 
-def load_word2vec_embeddings():
+def load_word2vec_embeddings(reverse_dictionary=None, word2vec=None):
     print('Extracting word2vec...')
     embeddings = [[]]
     word_index_dict = {'UNK': 0}
-    reverse_dictionary = np.load("Idx2Word.npy").item()
-    word2vec = np.load("CBOW_Embeddings.npy")
+    if reverse_dictionary is None:
+        reverse_dictionary = np.load("Idx2Word.npy").item()
+    if word2vec is None:
+        word2vec = np.load("CBOW_Embeddings.npy")
     i = 0
     for line in word2vec:
         vector = line
@@ -126,10 +128,10 @@ def load_word2vec_embeddings():
     embeddings[0] = [0]*len(embeddings[1])
     embeddings = np.array(embeddings, np.float32)
 
-    with open("embeddings.pkl", "wb") as embeddings_file:
-        pickle.dump(embeddings, embeddings_file)
-    with open("wid.pkl", "wb") as wid_file:
-        pickle.dump(word_index_dict, wid_file)
+    #with open("embeddings.pkl", "wb") as embeddings_file:
+    #    pickle.dump(embeddings, embeddings_file)
+    #with open("wid.pkl", "wb") as wid_file:
+    #    pickle.dump(word_index_dict, wid_file)
     return embeddings, word_index_dict
 
 

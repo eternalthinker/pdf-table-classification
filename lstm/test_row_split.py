@@ -8,9 +8,14 @@ import json
 from load_table_data import clean_table
 from implementation import load_word2vec_embeddings
 
+import sys
+sys.path.append(os.getcwd())
+from local_word2vec.word2vec_cbow_local import get_word2vec
+
 
 MAX_WORDS = 7
-word2vec_array, word2vec_dict = load_word2vec_embeddings()
+word2vec_array = None
+word2vec_dict = None
 
 
 def log(content):
@@ -47,7 +52,14 @@ def split_rows(table_content):
         rows_embed.append(embedding)
     return rows_orig, rows_embed
 
+def create_local_embedding(fnames, indices):
+    global word2vec_array
+    global word2vec_dict
+    reverse_dictionary, word2vec = get_word2vec(fnames, indices)
+    word2vec_array, word2vec_dict = load_word2vec_embeddings(reverse_dictionary, word2vec)
+
 def process_indices(fnames, indices):
+    create_local_embedding(fnames, indices)
     table_to_rows_map = dict()
     row_to_table_map = dict()
     rows_orig = []
