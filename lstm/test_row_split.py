@@ -219,9 +219,7 @@ def generate_row_similarity(fnames, neighbours_idxs, neighbour_ds):
         return main_html
 
 
-
 if __name__ == "__main__":
-    neighbours_idxs = [2, 0, 25, 53, 52] 
-    generate_row_similarity(neighbours_idxs)
+    pass
 
 
