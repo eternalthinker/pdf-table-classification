@@ -110,12 +110,14 @@ def get_style(part_fname):
         style = str(style_tags[0])
         return style
 
-def render_table(table_template, fname, class_str, company, script):
+def render_table(table_template, fname, class_str, company, orig_company, dist, script):
     table_config = {
         'table': {
             'script': script,
             'class_str': class_str,
-            'company': company
+            'company': company,
+            'orig_company': orig_company,
+            'distance': dist
         }
     }
     style = get_style(fname)
@@ -126,7 +128,7 @@ def render_table(table_template, fname, class_str, company, script):
     table = table_template.render(**table_config)
     return table
 
-def generate_row_similarity(fnames, neighbours_idxs):
+def generate_row_similarity(fnames, neighbours_idxs, neighbour_ds):
     cur_table_index = neighbours_idxs[0]
     table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts \
       = process_indices(fnames, neighbours_idxs)
@@ -184,8 +186,8 @@ def generate_row_similarity(fnames, neighbours_idxs):
         table_template = env.get_template('table.html')
         main_template = env.get_template('index.html')
 
-        fname, class_str, company = fnames[neighbours_idxs[0]]
-        query_table = render_table(table_template, fname, class_str, company, False, )
+        fname, class_str, company, orig_company = fnames[neighbours_idxs[0]]
+        query_table = render_table(table_template, fname, class_str, company, orig_company, neighbour_ds[0], False)
 
         main_config = dict()
         main_config['query'] = {
@@ -195,10 +197,10 @@ def generate_row_similarity(fnames, neighbours_idxs):
         neighbour_tables = []
         neighbour_fnames = []
         neighbour_indices = neighbours_idxs[1:]
-        for i in neighbour_indices:
-            fname, class_str, company = fnames[i]
+        for counter, i in enumerate(neighbour_indices):
+            fname, class_str, company, orig_company = fnames[i]
             neighbour_fnames.append(fname)
-            neighbour_table = render_table(table_template, fname, class_str, company, True)
+            neighbour_table = render_table(table_template, fname, class_str, company, orig_company, neighbour_ds[counter], True)
             neighbour_tables.append({
                 'content': neighbour_table,
                 'fname': fname

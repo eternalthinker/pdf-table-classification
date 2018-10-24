@@ -25,12 +25,16 @@ def validation_split(pct_validation):
     np.random.shuffle(training_classes)
     np.random.set_state(rng_state)
     np.random.shuffle(training_fnames)
+    np.random.set_state(rng_state)
+    np.random.shuffle(training_o_comps)
     # Split classes to training and validation
     training, validation = np.split(training_data, [num_training], axis=0)
     training_cls, validation_cls = np.split(training_classes, [num_training], axis=0)
     training_fs, validation_fs = np.split(training_fnames, [num_training], axis=0)
+    training_o_cs, validation_o_cs = np.split(training_o_comps, [num_training], axis=0)
     print("Training: {}, Validation: {}".format(training.shape, validation.shape))
-    return training, training_cls, training_fs, validation, validation_cls, validation_fs
+    return training, training_cls, training_fs, training_o_cs, \
+           validation, validation_cls, validation_fs, validation_o_cs
 
 def getTrainBatch():
     labels = []
@@ -62,6 +66,7 @@ def getNextOriginalBatch(offset, batch_size):
 def getNextTrainBatch(offset, batch_size):
     labels = []
     fnames = []
+    orig_comps = []
     arr = np.zeros([batch_size, seq_length])
     for i in range(batch_size):
         num = offset + i
@@ -71,7 +76,8 @@ def getNextTrainBatch(offset, batch_size):
         labels.append(label)
         arr[i] = training_data[num]
         fnames.append(training_fnames[num])
-    return arr, labels, fnames
+        orig_comps.append(training_o_comps[num])
+    return arr, labels, fnames, orig_comps
 
 def getTestBatch():
     labels = []
@@ -101,12 +107,13 @@ def getNextTestBatch(offset, batch_size):
 
 # Call implementation
 word2vec_array, word2vec_dict = imp.load_word2vec_embeddings()
-training_data, training_classes, training_fnames = imp.load_data(word2vec_dict)
+training_data, training_classes, training_fnames, training_o_comps = imp.load_data(word2vec_dict)
 original_data = training_data[:, :]
 original_classes = training_classes[:]
 original_fnames = training_fnames[:]
-training_data, training_classes, training_fnames, \
-validation_data, validation_classes, validation_fnames = \
+original_o_comps = training_o_comps[:]
+training_data, training_classes, training_fnames, training_o_comps, \
+validation_data, validation_classes, validation_fnames, validation_o_comps = \
     validation_split(0.2)
 input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, \
     prediction, correct_pred, pred_class, pred_prob = \
@@ -227,7 +234,7 @@ num_batches = len(training_data) // batch_size
 output_lines = []
 for batch_num in range(num_batches):
     offset = batch_num * batch_size
-    batch_data, batch_labels, batch_fnames = getNextTrainBatch(offset, batch_size)
+    batch_data, batch_labels, batch_fnames, batch_o_cs = getNextTrainBatch(offset, batch_size)
     sess.run(optimizer, {input_data: batch_data, labels: batch_labels, dropout_keep_prob: 1.0})
     loss_value, accuracy_value, summary, predictions, pred_classes, pred_probs = sess.run(
         [loss, accuracy, summary_op, prediction, pred_class, pred_prob],
@@ -240,7 +247,7 @@ for batch_num in range(num_batches):
         batch_classes.append(reverse_compound_class_mapping[batch_class])
     for i in range(batch_size):
         pred_strs = list(map(lambda n: str(n), pred_probs[i].tolist()))
-        output_line_batch[i] = [output_line_batch[i]] + [batch_classes[i]] + pred_strs
+        output_line_batch[i] = [output_line_batch[i]] + [batch_classes[i]] + [batch_o_cs[i]] + pred_strs
     output_lines += output_line_batch
 
 with open("pred_vecs.csv", "w") as pred_vecs:

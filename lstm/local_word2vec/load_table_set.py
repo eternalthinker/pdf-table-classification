@@ -7,11 +7,16 @@ import collections
 import re
 import numpy as np
 from bs4 import BeautifulSoup
+from load_table_data import clean_table
 
 
 re_tags_with_attrs = re.compile(r"(<[a-z]+) .*?(/?>)")
 
-def clean_table(content):
+def log(content):
+    with open("log.txt", "a", encoding="utf-8") as logf:
+        logf.write(str(content) + "\n")
+
+def clean_table_dep(content):
     # Clean tag attributes and separate with space
     content = re.sub(re_tags_with_attrs, r"\1\2", content)
     content = re.sub(r"(<)", r" \1", content)
@@ -20,12 +25,12 @@ def clean_table(content):
     content = content[1:-1]
 
     # Clean up numbers
-    content = re.sub(r"[\(]([0-9]+[,\.]?)+[0-9]+[\)]", r"()", content)
+    content = re.sub(r"[\(]([0-9]+[,\.]?)+[0-9]+[\)]", r" ", content)
     content = re.sub(r" ([0-9]+[,\.])+[0-9]+ ", r" ", content)
+    content = re.sub(r" [0-9]{1,3} ", r" ", content) # Keep years
 
     # Remove tags
     content = re.sub(r"<.*?>", r"", content)
-
     return content
 
 
@@ -43,6 +48,7 @@ def read_data(fnames, indices):
             for row_tag in row_tags:
                 clean = clean_table(str(row_tag))
                 clean = clean.lower()
+                # log(clean)
                 clean = clean.split()
                 data.extend(clean)
     return data

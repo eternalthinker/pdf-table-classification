@@ -30,7 +30,7 @@ $(document).ready(function() {
     let $selectedRow = $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`);
     if (dist < 10) {
       $selectedRow.addClass("highlight-selected");
-    } else if (dist < 100) {
+    } else if (dist < 1000) {
       $selectedRow.addClass("highlight2-selected");
     }
     $selectedRow.attr('title', `${dist}`);
@@ -40,6 +40,7 @@ $(document).ready(function() {
     $(`#frame_${neighbourFnames[curNeighbour]}`).css("display", "none");
     curNeighbour = i;
     $(`#frame_${neighbourFnames[curNeighbour]}`).css("display", "block");
+    $('#resultTableId').html(`${curNeighbour + 1}`);
   };
 
   $("tr").click(function() {
@@ -92,6 +93,7 @@ $(document).ready(function() {
   });
   //$("#neighbour-table").contents().find('html').html(neighbourTableContent);
   $(`#frame_${neighbourFnames[0]}`).css("display", "block");
+  $('#resultTableId').html('1');
   $('.loading').css('visibility', 'hidden');
 });
 

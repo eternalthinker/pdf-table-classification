@@ -52,6 +52,7 @@ def load_data(word2vec_dict):
     classes = []
     fnames = []
     companies = []
+    orig_companies = []
     dir = os.path.dirname(__file__)
     file_list = glob.glob(os.path.join(dir, 'data/*.html'))
     i = 0
@@ -67,12 +68,17 @@ def load_data(word2vec_dict):
         "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"])
 
     tables_mapping = dict()
-    with open('classes.csv', 'r', encoding='utf-8') as classes_file:
+    orig_company_mapping = dict()
+    with open('classes.csv', 'r', encoding='utf-8') as classes_file, \
+         open('classes-orig.csv', 'r', encoding='utf-8') as classes_orig:
         content = classes_file.read().split('\n')[:-1]
+        content_orig = classes_orig.read().split('\n')[:-1]
         
-        for item in content:
+        for idx, item in enumerate(content):
             filename, class_str, company = item.split(',')
+            _filename, _class_str, company_orig = content_orig[idx].split(',')
             tables_mapping[filename] = compound_class_mapping["{}:{}".format(class_str, company)]
+            orig_company_mapping[filename] = company_orig
 
     for fname, table_class in tables_mapping.items():
         f = os.path.join('data', '{}.html'.format(fname))
@@ -102,11 +108,12 @@ def load_data(word2vec_dict):
         data.append(int_value)
         classes.append(table_class)
         fnames.append(fname)
+        orig_companies.append(orig_company_mapping[fname])
 
     data = np.array(data, dtype=np.float32)
     with open("tables.pkl", "wb") as reviews_file:
         pickle.dump(data, reviews_file)
-    return data, classes, fnames
+    return data, classes, fnames, orig_companies
 
 
 def load_word2vec_embeddings(reverse_dictionary=None, word2vec=None):

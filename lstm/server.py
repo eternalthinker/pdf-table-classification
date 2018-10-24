@@ -26,7 +26,7 @@ def init():
 
 def find_neighbour_tables(table_index):
     ds, indices = neigh.get_neighbours(table_cluster_clf, X[table_index].reshape(1, -1))
-    return generate_row_similarity(fnames, indices[0])
+    return generate_row_similarity(fnames, indices[0], ds[0])
  
 @app.route("/", methods=['GET', 'POST'])
 def index():

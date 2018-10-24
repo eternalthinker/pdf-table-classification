@@ -36,7 +36,7 @@ def get_word2vec(fnames, indices):
     # Step 4: Build and train a skip-gram model.
 
     batch_size = 128
-    embedding_size = 100  # Dimension of the embedding vector.
+    embedding_size = 70  # Dimension of the embedding vector.
     skip_window = 1       # How many words to consider left and right.
 
     # We pick a random validation set to sample nearest neighbors. Here we limit the
@@ -102,7 +102,7 @@ def get_word2vec(fnames, indices):
         init = tf.global_variables_initializer()
 
     # Step 5: Begin training.
-    num_steps = 20001
+    num_steps = 10001
 
     saver = tf.train.Saver({'embedding':embeddings}, max_to_keep=None)
 

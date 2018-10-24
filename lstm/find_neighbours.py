@@ -20,10 +20,10 @@ def load_data():
         content = pred_vecs_file.read().split('\n')[:-1]
         for item in content:
             components = item.split(',')
-            filename, class_name = components[0:2]
-            pred_vec = components[2:]
+            filename, class_name, o_comp = components[0:3]
+            pred_vec = components[3:]
             company = tables_map[filename][1]
-            fnames.append([filename, class_name, company])
+            fnames.append([filename, class_name, company, o_comp])
             classes.append(compound_class_mapping[class_name])
             pred_vec_n = list(map(lambda s: float(s), pred_vec))
             pred_vecs.append(pred_vec_n)
@@ -33,13 +33,13 @@ def load_data():
     return X, y, fnames
 
 def train_clf(X, y):
-    clf = KNeighborsClassifier()
+    clf = KNeighborsClassifier(n_neighbors=6)
     clf.fit(X, y)
     return clf
 
 def get_neighbours(clf, query_x):
-    indices, distances = clf.kneighbors(query_x)
-    return indices, distances
+    distances, indices = clf.kneighbors(query_x)
+    return distances, indices
 
 
 if __name__ == "__main__":
@@ -49,5 +49,5 @@ if __name__ == "__main__":
     print(indices, ds)
     for i in indices[0]:
         print(i, fnames[i])
-    generate_row_similarity(fnames, indices[0])
+    generate_row_similarity(fnames, indices[0], ds[0])
 
