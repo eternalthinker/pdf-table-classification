@@ -7,6 +7,7 @@ import json
 
 from load_table_data import clean_table
 from implementation import load_word2vec_embeddings
+from table_util import parse_table
 
 import sys
 sys.path.append(os.getcwd())
@@ -16,6 +17,7 @@ from local_word2vec.word2vec_cbow_local import get_word2vec
 MAX_WORDS = 7
 word2vec_array = None
 word2vec_dict = None
+parsed_tables_map = dict()
 
 
 def log(content):
@@ -55,10 +57,12 @@ def split_rows(table_content):
 def create_local_embedding(fnames, indices):
     global word2vec_array
     global word2vec_dict
-    reverse_dictionary, word2vec = get_word2vec(fnames, indices)
-    word2vec_array, word2vec_dict = load_word2vec_embeddings(reverse_dictionary, word2vec)
+    # reverse_dictionary, word2vec = get_word2vec(fnames, indices)
+    word2vec_array, word2vec_dict = load_word2vec_embeddings() #reverse_dictionary, word2vec)
 
 def process_indices(fnames, indices):
+    global parsed_tables_map
+    parsed_tables_map = dict()
     create_local_embedding(fnames, indices)
     table_to_rows_map = dict()
     row_to_table_map = dict()
@@ -73,6 +77,8 @@ def process_indices(fnames, indices):
         f = os.path.join('data', '{}.html'.format(fname))
         with open(f, 'r', encoding='utf-8') as openf:
             s = openf.read()
+            parsed_table = parse_table(s)
+            parsed_tables_map[fname] = parsed_table
             t_rows_orig, t_rows_embed = split_rows(s)
             rows_orig += t_rows_orig
             rows_embed += t_rows_embed
@@ -82,7 +88,7 @@ def process_indices(fnames, indices):
                 row_to_table_map[i] = fname
                 subrows.append(j)
                 i += 1
-    return table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts
+    return table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts, parsed_tables_map
 
 
 def find_similar_rows(neigh, query):
@@ -130,7 +136,7 @@ def render_table(table_template, fname, class_str, company, orig_company, dist, 
 
 def generate_row_similarity(fnames, neighbours_idxs, neighbour_ds):
     cur_table_index = neighbours_idxs[0]
-    table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts \
+    table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts, parsed_tables_map \
       = process_indices(fnames, neighbours_idxs)
     
     nrows = [len(v) for v in table_to_rows_map.values()]
@@ -216,7 +222,7 @@ def generate_row_similarity(fnames, neighbours_idxs, neighbour_ds):
         }
         main_html = main_template.render(**main_config)
         output_html.write(main_html)
-        return main_html
+        return main_html, parsed_tables_map
 
 
 if __name__ == "__main__":

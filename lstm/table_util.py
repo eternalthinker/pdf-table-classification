@@ -25,9 +25,10 @@ def parse_table(table_content):
                 pass # Not a float
             # print("Cell: {}, IsNumber: {}".format(cell, isinstance(cell, float)))
             cols.append((colspan, cell))
-            print(cols[-1])
+            # print(cols[-1])
         rows.append(cols)
-        print(len(cols))
+        # print(len(cols))
+    return rows
     
 
 
