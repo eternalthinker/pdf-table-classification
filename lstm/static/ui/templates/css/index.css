@@ -34,6 +34,10 @@ tr.highlight-selected:hover, tr.highlight-selected:hover td, tr.highlight-select
 	overflow: scroll;
 }
 
+#queryControls {
+	margin-top: 10px;
+}
+
 
 /* Spinner */
 

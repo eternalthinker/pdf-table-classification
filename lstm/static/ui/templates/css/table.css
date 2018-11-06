@@ -17,4 +17,31 @@
 	background: rgb(235, 233, 158) !important;
 }
 
+.query-result {
+	background: rgb(158, 230, 252) !important;
+	border: 2px solid rgb(35, 77, 77) !important;
+}
+
+.query-result td, .query-result p {
+	background: rgb(158, 230, 252) !important;
+}
+
+.query-result.highlight-selected {
+	background: rgb(158, 252, 189) !important;
+	border: 2px solid rgb(35, 77, 51) !important;
+}
+
+.query-result.highlight-selected td, .query-result.highlight-selected p {
+	background: rgb(158, 252, 189) !important;
+}
+
+.query-result.highlight2-selected {
+	background: rgb(202, 255, 220) !important;
+	border: 2px solid rgb(57, 94, 71) !important;
+}
+
+.query-result.highlight2-selected td, .query-result.highlight2-selected p {
+	background: rgb(202, 255, 220) !important;
+}
+
 

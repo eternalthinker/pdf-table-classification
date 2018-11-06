@@ -4,14 +4,13 @@ $(document).ready(function() {
   let curNeighbour = 0;
   let neighbourTables = {};
 
-  const selectRow = (rowIdx) => {
+  const selectRow = (rowIdx, className) => {
     if(curRow !== null) {
-      $(`tr:eq(${curRow})`).removeClass("highlight-selected");
+      $(`tr:eq(${curRow})`).removeClass(className);
     }
 
     curRow = rowIdx;
-    $(`tr:eq(${rowIdx})`).addClass("highlight-selected");
-
+    $(`tr:eq(${rowIdx})`).addClass(className);
   };
 
   const clearNRows = () => {
@@ -36,6 +35,21 @@ $(document).ready(function() {
     $selectedRow.attr('title', `${dist}`);
   };
 
+  const clearQueryResults = () => {
+    neighbourFnames.forEach(fname => {
+      neighbourTables[fname].queryResults.forEach(curRow => {
+        $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`)
+          .removeClass("query-result");
+      });
+    });
+  };
+
+  const selectQueryResult = (fname, rowIdx) => {
+    neighbourTables[fname].queryResults.push(rowIdx);
+    let $selectedRow = $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${rowIdx})`);
+    $selectedRow.addClass("query-result");
+  };
+
   const showNeighbour = (i) => {
     $(`#frame_${neighbourFnames[curNeighbour]}`).css("display", "none");
     curNeighbour = i;
@@ -45,13 +59,49 @@ $(document).ready(function() {
 
   $("tr").click(function() {
     const i = $("tr").index($(this));
-    selectRow(i);
+    selectRow(i, 'highlight-selected');
     clearNRows();
     const simRows = rowSimMap[i];
     simRows.forEach(rowInfo => {
       selectNRow(rowInfo.fname, rowInfo.row, rowInfo.dist);
     });
     //const el = document.getElementById("neighbour-table").contentWindow;
+  });
+
+  function callApi({endpoint, method, data}) {
+    let params = {};
+    if (method === 'POST') {
+      params = {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+    }
+    return fetch(endpoint, params)
+      .then(res => res.json())
+      .then(json => json);
+  }
+
+  $("#queryStringSubmit").click((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const queryString = $('#queryString').val();
+    callApi({
+      endpoint: `/query`,
+      method: 'POST',
+      data: {
+        query: queryString
+      }
+    }).then(resultTablesMap => {
+      clearQueryResults();
+      neighbourFnames.forEach(fname => {
+        resultTablesMap[fname].forEach(curRow => {
+          selectQueryResult(fname, curRow);
+        });
+      });
+    }); 
   });
 
   $("#prev-table").click(() => {
@@ -78,7 +128,8 @@ $(document).ready(function() {
   /* ---- Init steps ---- */
   neighbourFnames.forEach(fname => {
     neighbourTables[fname] = {
-      curRows: []
+      curRows: [],
+      queryResults: []
     };
     let $iframe = $("<iframe>", {
       id: `frame_${fname}`, 

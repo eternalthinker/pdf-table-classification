@@ -8,6 +8,7 @@ output/
 log.txt
 test.html
 output.html
+*.bin
 
 ### Code ###
 # Visual Studio Code - https://code.visualstudio.com/
