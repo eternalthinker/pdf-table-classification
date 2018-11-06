@@ -8,6 +8,7 @@ import json
 from load_table_data import clean_table
 from implementation import load_word2vec_embeddings
 from table_util import parse_table
+from gensim_load import load_google_embeddings
 
 import sys
 sys.path.append(os.getcwd())
@@ -57,8 +58,8 @@ def split_rows(table_content):
 def create_local_embedding(fnames, indices):
     global word2vec_array
     global word2vec_dict
-    reverse_dictionary, word2vec = get_word2vec(fnames, indices)
-    word2vec_array, word2vec_dict = load_word2vec_embeddings(reverse_dictionary, word2vec)
+    # reverse_dictionary, word2vec = get_word2vec(fnames, indices)
+    word2vec_array, word2vec_dict =  load_google_embeddings() # load_word2vec_embeddings(reverse_dictionary, word2vec)
 
 def process_indices(fnames, indices):
     global parsed_tables_map

@@ -14,8 +14,8 @@ with open('pred_vecs.csv', 'r', encoding='utf-8') as pred_vecs_file:
     content = pred_vecs_file.read().split('\n')[:-1]
     for item in content:
         components = item.split(',')
-        filename, class_name = components[0:2]
-        pred_vec = components[2:]
+        filename, class_name, company = components[0:3]
+        pred_vec = components[3:]
         fnames.append(filename)
         classes.append(class_mapping[class_name])
         pred_vec_n = list(map(lambda s: float(s), pred_vec))

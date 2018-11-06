@@ -5,6 +5,7 @@ import datetime
 import os
 
 import implementation as imp
+import gensim_load as gensim_load
 
 batch_size = imp.batch_size
 iterations = 3000
@@ -106,7 +107,7 @@ def getNextTestBatch(offset, batch_size):
     return arr, labels, fnames
 
 # Call implementation
-word2vec_array, word2vec_dict = imp.load_word2vec_embeddings()
+word2vec_array, word2vec_dict = gensim_load.load_google_embeddings()  # imp.load_word2vec_embeddings()
 training_data, training_classes, training_fnames, training_o_comps = imp.load_data(word2vec_dict)
 original_data = training_data[:, :]
 original_classes = training_classes[:]

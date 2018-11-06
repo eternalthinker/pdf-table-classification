@@ -39,7 +39,7 @@ def read_data():
     with open('classes.csv', 'r', encoding='utf-8') as classes_file:
         content = classes_file.read().split('\n')[:-1]
         
-        for i, item in content:
+        for item in content:
             filename, class_str, company = item.split(',')
             if filename in tables_mapping:
                 print("REPEAT: ", filename)
