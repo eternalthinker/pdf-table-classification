@@ -3,6 +3,14 @@ from bs4 import BeautifulSoup
 import os
 from gensim_load import log
 
+
+year_regex = re.compile(r"^(20|19)[0-9][0-9]$")
+def is_year(n):
+    s = str(n).split(".")[0]
+    match = re.match(year_regex, s)
+    return (match is not None)
+
+
 def parse_table(table_content):
     soup = BeautifulSoup(table_content, 'html.parser')
     row_tags = soup.find_all('tr')
@@ -28,10 +36,25 @@ def parse_table(table_content):
             # print(cols[-1])
         rows.append(cols)
         # print(len(cols))
-    log(rows[0])
-    log(rows[1])
-    log("------ END OF TABLE ----")
-    return rows
+    # Parse headers
+    year_cols = []
+    for row in range(3):
+        cur_row = rows[row]
+        log(cur_row)
+        for i, cell in enumerate(cur_row):
+            if is_year(cell[1]):
+                year_info = (cell[1], i)
+                year_cols.append(year_info)
+        if len(year_cols) < 2:
+            year_cols = []
+        else:
+            log("Has years:{}".format(year_cols))
+            break
+
+    return {
+        'rows': rows,
+        'year_cols': year_cols 
+    }
     
 
 

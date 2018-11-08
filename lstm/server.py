@@ -49,16 +49,24 @@ def handle_query():
     query = data['query']
     conds = query_util.parse_query(query)
     result_map = dict()
-    for fname, rows in parsed_tables_map.items():
+    for fname, table_info in parsed_tables_map.items():
         result_row_idxs = []
-        for i, row in enumerate(rows):
+        for i, row in enumerate(table_info['rows']):
             new_row = row[:]
-            for cond in conds:
+            for cond in conds['row']:
                 new_row = filter(cond, new_row)
             new_row = list(new_row)
             if len(new_row) > 0:
                 result_row_idxs.append(i)
-        result_map[fname] = result_row_idxs[:]
+        result_cols = []
+        for cond in conds['col']:
+            filter_year_cols = filter(cond, table_info['year_cols'])
+            filter_cols = map(lambda p: p[1], filter_year_cols) 
+            result_cols += list(filter_cols)
+        result_map[fname] = {
+            'rows': result_row_idxs[:],
+            'cols': result_cols[:]
+        }
     return jsonify(result_map)
 
 

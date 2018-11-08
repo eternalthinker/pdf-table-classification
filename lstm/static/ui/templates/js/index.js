@@ -21,6 +21,7 @@ $(document).ready(function() {
           .removeClass("highlight-selected")
           .removeClass("highlight2-selected");
       });
+      neighbourTables[fname].curRows = [];
     });
   };
 
@@ -41,6 +42,33 @@ $(document).ready(function() {
         $($(`#frame_${fname}`).get(0).contentWindow.document).find(`tr:eq(${curRow})`)
           .removeClass("query-result");
       });
+      neighbourTables[fname].queryResults = [];
+    });
+  };
+
+  // Call before clearQueryResults
+  const clearQueryCols = () => {
+    neighbourFnames.forEach(fname => {
+      neighbourTables[fname].queryResults.forEach(curRow => {
+        neighbourTables[fname].queryCols.forEach(curCol => {
+          $($(`#frame_${fname}`).get(0).contentWindow.document)
+            .find(`tr:eq(${curRow})`)
+            .find(`td:eq(${curCol})`)
+            .removeClass("query-col");
+        }); //col
+      }); // row
+      neighbourTables[fname].queryCols = [];
+    }); // fname
+  };
+
+  // Call after all calls to selectQueryResult
+  const selectQueryCol = (fname, colIdx) => {
+    neighbourTables[fname].queryCols.push(colIdx);
+    neighbourTables[fname].queryResults.forEach(rowIdx => {
+      $($(`#frame_${fname}`).get(0).contentWindow.document)
+        .find(`tr:eq(${rowIdx})`)
+        .find(`td:eq(${colIdx})`)
+        .addClass("query-col");
     });
   };
 
@@ -95,10 +123,14 @@ $(document).ready(function() {
         query: queryString
       }
     }).then(resultTablesMap => {
+      clearQueryCols();
       clearQueryResults();
       neighbourFnames.forEach(fname => {
-        resultTablesMap[fname].forEach(curRow => {
+        resultTablesMap[fname].rows.forEach(curRow => {
           selectQueryResult(fname, curRow);
+        });
+        resultTablesMap[fname].cols.forEach(curCol => {
+          selectQueryCol(fname, curCol);
         });
       });
     }); 
@@ -129,7 +161,8 @@ $(document).ready(function() {
   neighbourFnames.forEach(fname => {
     neighbourTables[fname] = {
       curRows: [],
-      queryResults: []
+      queryResults: [],
+      queryCols: []
     };
     let $iframe = $("<iframe>", {
       id: `frame_${fname}`, 
