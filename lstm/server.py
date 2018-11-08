@@ -42,6 +42,9 @@ def index():
 
 @app.route("/query", methods=['POST'])
 def handle_query():
+    def log(content):
+        with open("log.txt", "a", encoding="utf-8") as logf:
+            logf.write(str(content) + "\n")
     data = request.get_json()
     query = data['query']
     conds = query_util.parse_query(query)
@@ -52,7 +55,8 @@ def handle_query():
             new_row = row[:]
             for cond in conds:
                 new_row = filter(cond, new_row)
-            if len(list(new_row)) > 0:
+            new_row = list(new_row)
+            if len(new_row) > 0:
                 result_row_idxs.append(i)
         result_map[fname] = result_row_idxs[:]
     return jsonify(result_map)

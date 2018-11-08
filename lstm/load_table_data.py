@@ -10,6 +10,7 @@ import numpy as np
 
 re_tags_with_attrs = re.compile(r"(<[a-z]+) .*?(/?>)")
 
+
 def clean_table(content):
     # Clean tag attributes and separate with space
     content = re.sub(re_tags_with_attrs, r"\1\2", content)

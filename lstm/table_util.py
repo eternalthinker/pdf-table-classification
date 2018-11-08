@@ -1,7 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 import os
-
+from gensim_load import log
 
 def parse_table(table_content):
     soup = BeautifulSoup(table_content, 'html.parser')
@@ -16,7 +16,7 @@ def parse_table(table_content):
             cell = str(col_tag.contents[0])
             # Remove tags
             cell = re.sub(r"<.*?>", r"", cell)
-            cell = cell.replace(".", "").strip()
+            cell = cell.replace(" .", "").strip()
             cell = cell.replace("$", "").strip()
             clean_cell = re.sub(r"[\(\),]", r"", cell)
             try:
@@ -28,6 +28,9 @@ def parse_table(table_content):
             # print(cols[-1])
         rows.append(cols)
         # print(len(cols))
+    log(rows[0])
+    log(rows[1])
+    log("------ END OF TABLE ----")
     return rows
     
 

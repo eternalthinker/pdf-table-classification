@@ -1,0 +1,133 @@
+* Public data vs DB subscription
+* Query engine usage
+* DB functions vs this interface
+* Expandable framework - generic
+
+
+* Unstructured data within PDF
+* The intuition of similarity of tables
+* Conditions - numeric
+
+* Empirical result
+* Objective values - accuracy, precision/recall
+* Query-able PDF tables
+* Lit review
+
+* Report: Optimizing, Querying, Top K results based on distance
+
+
+Overall Accuracy:  0.8999999761581421
+
+ ============ Analyse all training data
+2018-10-19 12:02:52.077856: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-10-19 12:02:52.081818: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-10-19 12:02:52.086214: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:971]      0
+2018-10-19 12:02:52.091281: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:984] 0:   N
+2018-10-19 12:02:52.093740: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 1401 MB memory) -> physical GPU (device: 0, name: GeForce GTX 950M, pci bus id: 0000:01:00.0, compute capability: 5.0)
+micro: 0.90000000
+macro: nan
+weighted: nan
+F1 score
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1137: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+micro: 0.90000000
+macro: 0.55833333
+weighted: 0.88333333
+Precision
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+micro: 0.90000000
+macro: 0.55000000
+weighted: 0.87500000
+Recall
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1137: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+micro: 0.90000000
+macro: 0.57500000
+weighted: 0.90000000
+
+
+
+ ============ Analyse all validation data
+Overall Accuracy:  0.9000000059604645
+
+ ============ Analyse all training data
+2018-10-19 12:08:50.979940: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-10-19 12:08:50.982810: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-10-19 12:08:50.986534: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:971]      0
+2018-10-19 12:08:50.988792: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:984] 0:   N
+2018-10-19 12:08:50.994969: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 1401 MB memory) -> physical GPU (device: 0, name: GeForce GTX 950M, pci bus id: 0000:01:00.0, compute capability: 5.0)
+micro: 0.90000000
+macro: nan
+weighted: nan
+F1 score
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1137: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+micro: 0.90000000
+macro: 0.60952381
+weighted: 0.92142857
+Precision
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+micro: 0.90000000
+macro: 0.62500000
+weighted: 0.97500000
+Recall
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1137: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+micro: 0.90000000
+macro: 0.61250000
+weighted: 0.90000000
+
+ ============ Analyse all validation data
+Overall Accuracy:  0.949999988079071
+
+ ============ Analyse all training data
+2018-10-23 22:26:23.611424: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-10-23 22:26:23.614346: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-10-23 22:26:23.619315: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:971]      0
+2018-10-23 22:26:23.624908: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:984] 0:   N
+2018-10-23 22:26:23.628767: I T:\src\github\tensorflow\tensorflow\core\common_runtime\gpu\gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 1401 MB memory) -> physical GPU (device: 0, name: GeForce GTX 950M, pci bus id: 0000:01:00.0, compute capability: 5.0)
+micro: 0.95000000
+macro: nan
+weighted: nan
+F1 score
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1137: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+micro: 0.95000000
+macro: 0.55000000
+weighted: 0.95000000
+Precision
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1135: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+micro: 0.95000000
+macro: 0.55000000
+weighted: 0.95000000
+Recall
+C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\metrics\classification.py:1137: UndefinedMetricWarning: Recall is ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
+micro: 0.95000000
+macro: 0.55000000
+weighted: 0.95000000
+
+
+======= Dummy comp + local embed
+* Some same company, few simialr other companies as well
+* Row sim examples with diff company
+
+
+
+======= 26 Oct 2018
+* Use a pretrained word embedding
+* Train o financial documents - essays
+
+Google embeddings
+--------------------
+Try with Dummy
+Try with comp

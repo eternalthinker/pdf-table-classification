@@ -4,7 +4,7 @@ from load_table_data import read_data
 
 
 def log(content):
-    with open("log.txt", "w", encoding="utf-8") as logf:
+    with open("log.txt", "a", encoding="utf-8") as logf:
         logf.write(str(content) + "\n")
 
 
