@@ -3,6 +3,7 @@ import tensorflow as tf
 from random import randint
 import datetime
 import os
+import pickle
 
 import implementation as imp
 import gensim_load as gensim_load
@@ -20,6 +21,9 @@ def validation_split(pct_validation):
     num_validation = int(data_size*pct_validation)
     num_training = data_size - num_validation
     # Shuffle
+    # np.random.seed(42)
+    state = pickle.load(open("random_seed.pkl", "rb"))
+    np.random.set_state(state)
     rng_state = np.random.get_state()
     np.random.shuffle(training_data)
     np.random.set_state(rng_state)
@@ -108,6 +112,7 @@ def getNextTestBatch(offset, batch_size):
 
 # Call implementation
 word2vec_array, word2vec_dict = gensim_load.load_google_embeddings()  # imp.load_word2vec_embeddings()
+# word2vec_array, word2vec_dict = imp.load_word2vec_embeddings()
 training_data, training_classes, training_fnames, training_o_comps = imp.load_data(word2vec_dict)
 original_data = training_data[:, :]
 original_classes = training_classes[:]
@@ -116,6 +121,9 @@ original_o_comps = training_o_comps[:]
 training_data, training_classes, training_fnames, training_o_comps, \
 validation_data, validation_classes, validation_fnames, validation_o_comps = \
     validation_split(0.2)
+gensim_load.log(",".join(training_fnames))
+
+
 input_data, labels, dropout_keep_prob, optimizer, accuracy, loss, \
     prediction, correct_pred, pred_class, pred_prob = \
     imp.define_graph(word2vec_array)
@@ -146,7 +154,7 @@ for i in range(iterations):
             {input_data: batch_data,
              labels: batch_labels})
         writer.add_summary(summary, i)
-        print("Iteration: ", i)
+        print("======== Iteration: ", i)
         print("loss", loss_value)
         print("acc", accuracy_value)
         # add validation test, doesn't have to be this frequent

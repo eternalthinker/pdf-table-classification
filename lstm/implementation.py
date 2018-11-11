@@ -69,6 +69,7 @@ def load_data(word2vec_dict):
 
     tables_mapping = dict()
     orig_company_mapping = dict()
+    tables_list = []
     with open('classes.csv', 'r', encoding='utf-8') as classes_file, \
          open('classes-orig.csv', 'r', encoding='utf-8') as classes_orig:
         content = classes_file.read().split('\n')[:-1]
@@ -79,8 +80,10 @@ def load_data(word2vec_dict):
             _filename, _class_str, company_orig = content_orig[idx].split(',')
             tables_mapping[filename] = compound_class_mapping["{}:{}".format(class_str, company)]
             orig_company_mapping[filename] = company_orig
+            tables_list.append(filename)
 
-    for fname, table_class in tables_mapping.items():
+    for fname in tables_list:
+        table_class = tables_mapping[fname]
         f = os.path.join('data', '{}.html'.format(fname))
         with open(f, 'r', encoding='utf-8') as openf:
             s = openf.read()
