@@ -10,6 +10,7 @@ import numpy as np
 
 re_tags_with_attrs = re.compile(r"(<[a-z]+) .*?(/?>)")
 
+
 def clean_table(content):
     # Clean tag attributes and separate with space
     content = re.sub(re_tags_with_attrs, r"\1\2", content)
@@ -19,12 +20,15 @@ def clean_table(content):
     content = content[1:-1]
 
     # Clean up numbers
-    content = re.sub(r"[\(]([0-9]+[,\.]?)+[0-9]+[\)]", r"()", content)
+    content = re.sub(r"[\(]([0-9]+[,\.]?)+[0-9]+[\)]", r" ", content)
     content = re.sub(r" ([0-9]+[,\.])+[0-9]+ ", r" ", content)
+    content = re.sub(r" [0-9]{1,3} ", r" ", content) # Keep years
+
+    # Clean up some symbols
+    content = re.sub(r" – ", r" ", content)
 
     # Remove tags
     content = re.sub(r"<.*?>", r"", content)
-
     return content
 
 

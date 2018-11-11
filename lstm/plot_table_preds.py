@@ -3,7 +3,7 @@ import matplotlib
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 
-from implementation import class_mapping, reverse_class_mapping
+from implementation import compound_class_mapping as class_mapping, reverse_compound_class_mapping as reverse_class_mapping
 
 
 # Import data
@@ -14,8 +14,8 @@ with open('pred_vecs.csv', 'r', encoding='utf-8') as pred_vecs_file:
     content = pred_vecs_file.read().split('\n')[:-1]
     for item in content:
         components = item.split(',')
-        filename, class_name = components[0:2]
-        pred_vec = components[2:]
+        filename, class_name, company = components[0:3]
+        pred_vec = components[3:]
         fnames.append(filename)
         classes.append(class_mapping[class_name])
         pred_vec_n = list(map(lambda s: float(s), pred_vec))
@@ -29,10 +29,68 @@ def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
     assert low_dim_embs.shape[0] >= len(labels), 'More labels than embeddings'
 
     plt.figure(figsize=(14, 9))  # in inches
-    colors = ['r', 'g', 'b', 'orange']
+    colors = ['r', 'g', 'b', 'orange', 'grey']
+    colors = [
+        'red',
+        'firebrick',
+        'lightcoral',
+        'maroon',
+
+        'olivedrab',
+        'lawngreen',
+        'g',
+        'yellowgreen',
+
+        'gold',
+        'orange',
+        'darkorange',
+        'darkgoldenrod',
+
+        'c',
+        'darkcyan',
+        'lightseagreen',
+        'mediumaquamarine',
+
+        'm',
+        'fuchsia',
+        'darkviolet',
+        'darkorchid'
+    ]
+
+    taken_color_idxs = set()
+    label_colors = dict()
+    def get_color_dyn(label):
+        if label in label_colors:
+            return label_colors[label]
+        company = label.split(':')[1]
+        offset_begin = ['AGL', 'APA', 'CSL', 'RMD', 'TLS'].index(company) * 4
+        for i in range(4):
+            color_idx = offset_begin + i
+            if color_idx not in taken_color_idxs:
+                taken_color_idxs.add(color_idx)
+                label_colors[label] = colors[color_idx]
+                return label_colors[label]
+
+
+    def get_color(label):
+        company = label.split(':')[1]
+        c_idx = {
+            'AGL': 0,
+            'APA': 1,
+            'CSL': 2,
+            'RMD': 3,
+            'TLS': 4
+        }[company]
+        return colors[c_idx]
+
+    def get_label(label):
+        company = label.split(':')[1]
+        return company
+
     legends = set()
     for i, label in enumerate(labels):
         x, y = low_dim_embs[i, :]
+        # plt.scatter(x, y, c=get_color(label), label=get_label(label)) # c=colors[class_mapping[label]], label=label)
         plt.scatter(x, y, c=colors[class_mapping[label]], label=label)
         # plt.annotate(label,
         #              xy=(x, y),
@@ -40,10 +98,18 @@ def plot_with_labels(low_dim_embs, labels, filename='table_preds.png'):
         #              textcoords='offset points',
         #              ha='right',
         #              va='bottom')
-        if label not in legends:
-            print('#',label,'#')
-            legends.add(label)
-            plt.legend()
+        label1 = get_label(label)
+        # if label1 not in legends:
+        #     print('#',label1,'#')
+        #     legends.add(label1)
+        #     plt.legend()
+
+    from collections import OrderedDict
+    handles, labels = plt.gca().get_legend_handles_labels()
+    pairs = zip(labels, handles)
+    pairs = sorted(pairs, key=lambda p: "{}{}".format(p[0].split(':')[1], p[0][:2]))
+    by_label = OrderedDict(pairs)
+    plt.legend(by_label.values(), by_label.keys())
 
     plt.savefig(filename)
     print("plots saved in {0}".format(filename))

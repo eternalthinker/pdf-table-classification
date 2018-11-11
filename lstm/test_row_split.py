@@ -2,15 +2,23 @@ import os
 from bs4 import BeautifulSoup
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoader
 import json
 
 from load_table_data import clean_table
 from implementation import load_word2vec_embeddings
+from table_util import parse_table
+from gensim_load import load_google_embeddings
+
+import sys
+sys.path.append(os.getcwd())
+from local_word2vec.word2vec_cbow_local import get_word2vec
 
 
-MAX_WORDS = 10
-word2vec_array, word2vec_dict = load_word2vec_embeddings()
+MAX_WORDS = 7
+word2vec_array = None
+word2vec_dict = None
+parsed_tables_map = dict()
 
 
 def log(content):
@@ -47,7 +55,16 @@ def split_rows(table_content):
         rows_embed.append(embedding)
     return rows_orig, rows_embed
 
+def create_local_embedding(fnames, indices):
+    global word2vec_array
+    global word2vec_dict
+    # reverse_dictionary, word2vec = get_word2vec(fnames, indices)
+    word2vec_array, word2vec_dict =  load_google_embeddings() # load_word2vec_embeddings(reverse_dictionary, word2vec)
+
 def process_indices(fnames, indices):
+    global parsed_tables_map
+    parsed_tables_map = dict()
+    create_local_embedding(fnames, indices)
     table_to_rows_map = dict()
     row_to_table_map = dict()
     rows_orig = []
@@ -61,6 +78,8 @@ def process_indices(fnames, indices):
         f = os.path.join('data', '{}.html'.format(fname))
         with open(f, 'r', encoding='utf-8') as openf:
             s = openf.read()
+            parsed_table = parse_table(s)
+            parsed_tables_map[fname] = parsed_table
             t_rows_orig, t_rows_embed = split_rows(s)
             rows_orig += t_rows_orig
             rows_embed += t_rows_embed
@@ -70,7 +89,7 @@ def process_indices(fnames, indices):
                 row_to_table_map[i] = fname
                 subrows.append(j)
                 i += 1
-    return table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts
+    return table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts, parsed_tables_map
 
 
 def find_similar_rows(neigh, query):
@@ -98,12 +117,14 @@ def get_style(part_fname):
         style = str(style_tags[0])
         return style
 
-def render_table(table_template, fname, class_str, company, script):
+def render_table(table_template, fname, class_str, company, orig_company, dist, script):
     table_config = {
         'table': {
             'script': script,
             'class_str': class_str,
-            'company': company
+            'company': company,
+            'orig_company': orig_company,
+            'distance': dist
         }
     }
     style = get_style(fname)
@@ -114,14 +135,15 @@ def render_table(table_template, fname, class_str, company, script):
     table = table_template.render(**table_config)
     return table
 
-def generate_row_similarity(fnames, neighbours_idxs):
-    table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts \
+def generate_row_similarity(fnames, neighbours_idxs, neighbour_ds):
+    cur_table_index = neighbours_idxs[0]
+    table_to_rows_map, row_to_table_map, subrows, rows_orig, rows_embed, row_counts, parsed_tables_map \
       = process_indices(fnames, neighbours_idxs)
     
     nrows = [len(v) for v in table_to_rows_map.values()]
     avg = sum(nrows) // len(nrows)
 
-    neigh = NearestNeighbors(n_neighbors=10)
+    neigh = NearestNeighbors(n_neighbors=15)
     neigh.fit(rows_embed)
 
     with open("test.html", "w", encoding="utf-8") as html, \
@@ -139,11 +161,13 @@ def generate_row_similarity(fnames, neighbours_idxs):
         for row_idx in range(row_counts[0]):
             query = np.array(rows_embed[row_idx]).reshape(1, -1)
             dist, ind = find_similar_rows(neigh, query)
-            ind_neighbours = filter(lambda i: row_to_table_map[i] != fnames[neighbours_idxs[0]][0], ind[0])
-            row_sim_map[row_idx] = list(map(lambda i: {
-                'fname': row_to_table_map[i],
-                'row': subrows[i]
-            }, ind_neighbours))
+            ind_neighbours_dist = \
+                filter(lambda p: row_to_table_map[p[0]] != fnames[neighbours_idxs[0]][0], zip(ind[0], dist[0]))
+            row_sim_map[row_idx] = list(map(lambda p: {
+                'fname': row_to_table_map[p[0]],
+                'row': subrows[p[0]],
+                'dist': p[1]
+            }, ind_neighbours_dist))
 
             # print(dist, ind)
             html.write("<table>")
@@ -162,14 +186,15 @@ def generate_row_similarity(fnames, neighbours_idxs):
             html.write("</table><hr />")
 
         env = Environment(
-            loader=PackageLoader('ui', 'templates'),
-            autoescape=None#select_autoescape(['html'])
+            # loader=PackageLoader('static', 'ui', 'templates'),
+            loader = FileSystemLoader(searchpath="./static/ui/templates/"),
+            autoescape=None #select_autoescape(['html'])
         )
         table_template = env.get_template('table.html')
         main_template = env.get_template('index.html')
 
-        fname, class_str, company = fnames[neighbours_idxs[0]]
-        query_table = render_table(table_template, fname, class_str, company, False, )
+        fname, class_str, company, orig_company = fnames[neighbours_idxs[0]]
+        query_table = render_table(table_template, fname, class_str, company, orig_company, neighbour_ds[0], False)
 
         main_config = dict()
         main_config['query'] = {
@@ -179,10 +204,10 @@ def generate_row_similarity(fnames, neighbours_idxs):
         neighbour_tables = []
         neighbour_fnames = []
         neighbour_indices = neighbours_idxs[1:]
-        for i in neighbour_indices:
-            fname, class_str, company = fnames[i]
+        for counter, i in enumerate(neighbour_indices):
+            fname, class_str, company, orig_company = fnames[i]
             neighbour_fnames.append(fname)
-            neighbour_table = render_table(table_template, fname, class_str, company, True)
+            neighbour_table = render_table(table_template, fname, class_str, company, orig_company, neighbour_ds[counter], True)
             neighbour_tables.append({
                 'content': neighbour_table,
                 'fname': fname
@@ -192,13 +217,16 @@ def generate_row_similarity(fnames, neighbours_idxs):
             'content_list': neighbour_tables,
             'fnames': json.dumps(neighbour_fnames)
         }
+        main_config['tables'] = {
+            'table_list': fnames,
+            'cur_table_index': cur_table_index
+        }
         main_html = main_template.render(**main_config)
         output_html.write(main_html)
-
+        return main_html, parsed_tables_map
 
 
 if __name__ == "__main__":
-    neighbours_idxs = [2, 0, 25, 53, 52] 
-    generate_row_similarity(neighbours_idxs)
+    pass
 
 

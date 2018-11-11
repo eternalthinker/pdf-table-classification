@@ -4,8 +4,12 @@
 <link rel="stylesheet" href="ui/templates/css/bootstrap.min.css" />
 
 <p>
-	<span class="badge badge-secondary">{{ table.class_str }}</span>
-	<span class="badge badge-info">{{ table.company }}</span>
+	<h5>
+		<span class="badge badge-secondary">{{ table.class_str }}</span>
+		<span class="badge badge-info">{{ table.company }}</span>
+		<span class="badge badge-warning">{{ table.orig_company }}</span>
+		<span class="badge badge-success">{{ table.distance }}</span>
+	</h5>
 </p>
 {{ table.content }}
 

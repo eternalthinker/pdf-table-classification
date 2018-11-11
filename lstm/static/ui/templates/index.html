@@ -6,7 +6,24 @@
     <title>Table Query</title>
 </head>
 <body>
+    <div class="loading">Loading&#8230;</div>
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm">
+                <div id="queryControls">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <input type="text" class="form-control" id="queryString" placeholder="Type query here...">
+                            </div>
+                            <div class="form-group col-md-6">
+                                    <button type="submit" id="queryStringSubmit" class="btn btn-primary mb-2">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -16,6 +33,25 @@
                     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div class="navbar-nav">
                             <span class="navbar-brand mb-0 h1">Query table</span>
+                            <form class="form-inline" method="POST" action="/" id="tableQueryForm">
+                                <div class="form-group mb-2">
+                                    <select class="form-control" id="queryTableIdx" name="queryTableIdx"
+                                    >
+                                    <!-- onchange="this.form.submit()" -->
+                                        {% for item in tables.table_list %}
+                                            <option 
+                                                value="{{ loop.index0 }}"
+                                                {% if loop.index0 == tables.cur_table_index %}
+                                                    selected class="sel-option"
+                                                {% endif %}
+                                            >
+                                                {{ item[0] }}--{{ item[1] }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <!-- <button type="submit" class="btn btn-primary mb-2">Search</button> -->
+                            </form>
                         </div>
                     </div>
                 </nav>
@@ -35,6 +71,7 @@
                                 <button type="button" class="btn btn-primary" id="prev-table">Previous</button>
                                 <button type="button" class="btn btn-primary" id="next-table">Next</button>
                             </div>
+                            <span class="navbar-brand" id="resultTableId" style="padding-left: 20px"></span>
                         </div>
                     </div>
                 </nav>
@@ -50,6 +87,8 @@
     <script type="text/javascript">
         const neighbourFnames = {{ neighbours.fnames }};
         const rowSimMap = {{ query.row_sim_map }};
+        const tableList = {{ tables.table_list }};
+        const curTableIndex = {{ tables.cur_table_index }};
     </script>
 
     <script type="text/javascript" src="ui/templates/js/jquery-3.3.1.min.js"></script>

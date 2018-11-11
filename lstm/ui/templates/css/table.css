@@ -1,9 +1,0 @@
-
-.highlight-selected {
-	background: rgb(240, 236, 17) !important;
-	border: 2px solid rgb(78, 65, 9) !important;
-}
-
-.highlight-selected td, .highlight-selected p {
-	background: rgb(240, 236, 17) !important;
-}

@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 
-from implementation import class_mapping
+from implementation import compound_class_mapping
 from test_row_split import generate_row_similarity
 
 
@@ -20,11 +20,11 @@ def load_data():
         content = pred_vecs_file.read().split('\n')[:-1]
         for item in content:
             components = item.split(',')
-            filename, class_name = components[0:2]
-            pred_vec = components[2:]
+            filename, class_name, o_comp = components[0:3]
+            pred_vec = components[3:]
             company = tables_map[filename][1]
-            fnames.append([filename, class_name, company])
-            classes.append(class_mapping[class_name])
+            fnames.append([filename, class_name, company, o_comp])
+            classes.append(compound_class_mapping[class_name])
             pred_vec_n = list(map(lambda s: float(s), pred_vec))
             pred_vecs.append(pred_vec_n)
 
@@ -33,21 +33,21 @@ def load_data():
     return X, y, fnames
 
 def train_clf(X, y):
-    clf = KNeighborsClassifier()
+    clf = KNeighborsClassifier(n_neighbors=6)
     clf.fit(X, y)
     return clf
 
 def get_neighbours(clf, query_x):
-    indices, distances = clf.kneighbors(query_x)
-    return indices, distances
+    distances, indices = clf.kneighbors(query_x)
+    return distances, indices
 
 
 if __name__ == "__main__":
     X, y, fnames = load_data()
     clf = train_clf(X, y)
-    ds, indices = get_neighbours(clf, X[14].reshape(1, -1))
+    ds, indices = get_neighbours(clf, X[53].reshape(1, -1))
     print(indices, ds)
     for i in indices[0]:
         print(i, fnames[i])
-    generate_row_similarity(fnames, indices[0])
+    generate_row_similarity(fnames, indices[0], ds[0])
 

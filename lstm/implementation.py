@@ -22,6 +22,25 @@ reverse_class_mapping = dict()
 for class_name, class_num in class_mapping.items():
     reverse_class_mapping[class_num] = class_name
 
+def load_compound_class_mapping():
+    compound_class_mapping = dict()
+    running_class_num = 0
+    with open('classes.csv', 'r', encoding='utf-8') as classes_file:
+        content = classes_file.read().split('\n')[:-1]
+        for item in content:
+            filename, class_str, company = item.split(',')
+            compound_class = "{}:{}".format(class_str, company)
+            if compound_class not in compound_class_mapping:
+                compound_class_mapping[compound_class] = running_class_num
+                running_class_num += 1
+    return compound_class_mapping
+
+compound_class_mapping =  load_compound_class_mapping()
+print(compound_class_mapping, len(compound_class_mapping))
+reverse_compound_class_mapping = dict()
+for class_name, class_num in compound_class_mapping.items():
+    reverse_compound_class_mapping[class_num] = class_name
+
 def load_data(word2vec_dict):
     if False: # os.path.exists(os.path.join(os.path.dirname(__file__), "tables.pkl")):
         print("loading pickled vectorized table...")
@@ -32,6 +51,8 @@ def load_data(word2vec_dict):
     data = []
     classes = []
     fnames = []
+    companies = []
+    orig_companies = []
     dir = os.path.dirname(__file__)
     file_list = glob.glob(os.path.join(dir, 'data/*.html'))
     i = 0
@@ -47,14 +68,22 @@ def load_data(word2vec_dict):
         "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now"])
 
     tables_mapping = dict()
-    with open('classes.csv', 'r', encoding='utf-8') as classes_file:
+    orig_company_mapping = dict()
+    tables_list = []
+    with open('classes.csv', 'r', encoding='utf-8') as classes_file, \
+         open('classes-orig.csv', 'r', encoding='utf-8') as classes_orig:
         content = classes_file.read().split('\n')[:-1]
+        content_orig = classes_orig.read().split('\n')[:-1]
         
-        for item in content:
+        for idx, item in enumerate(content):
             filename, class_str, company = item.split(',')
-            tables_mapping[filename] = class_mapping[class_str]
+            _filename, _class_str, company_orig = content_orig[idx].split(',')
+            tables_mapping[filename] = compound_class_mapping["{}:{}".format(class_str, company)]
+            orig_company_mapping[filename] = company_orig
+            tables_list.append(filename)
 
-    for fname, table_class in tables_mapping.items():
+    for fname in tables_list:
+        table_class = tables_mapping[fname]
         f = os.path.join('data', '{}.html'.format(fname))
         with open(f, 'r', encoding='utf-8') as openf:
             s = openf.read()
@@ -82,19 +111,22 @@ def load_data(word2vec_dict):
         data.append(int_value)
         classes.append(table_class)
         fnames.append(fname)
+        orig_companies.append(orig_company_mapping[fname])
 
     data = np.array(data, dtype=np.float32)
     with open("tables.pkl", "wb") as reviews_file:
         pickle.dump(data, reviews_file)
-    return data, classes, fnames
+    return data, classes, fnames, orig_companies
 
 
-def load_word2vec_embeddings():
+def load_word2vec_embeddings(reverse_dictionary=None, word2vec=None):
     print('Extracting word2vec...')
     embeddings = [[]]
     word_index_dict = {'UNK': 0}
-    reverse_dictionary = np.load("Idx2Word.npy").item()
-    word2vec = np.load("CBOW_Embeddings.npy")
+    if reverse_dictionary is None:
+        reverse_dictionary = np.load("Idx2Word.npy").item()
+    if word2vec is None:
+        word2vec = np.load("CBOW_Embeddings.npy")
     i = 0
     for line in word2vec:
         vector = line
@@ -106,16 +138,16 @@ def load_word2vec_embeddings():
     embeddings[0] = [0]*len(embeddings[1])
     embeddings = np.array(embeddings, np.float32)
 
-    with open("embeddings.pkl", "wb") as embeddings_file:
-        pickle.dump(embeddings, embeddings_file)
-    with open("wid.pkl", "wb") as wid_file:
-        pickle.dump(word_index_dict, wid_file)
+    #with open("embeddings.pkl", "wb") as embeddings_file:
+    #    pickle.dump(embeddings, embeddings_file)
+    #with open("wid.pkl", "wb") as wid_file:
+    #    pickle.dump(word_index_dict, wid_file)
     return embeddings, word_index_dict
 
 
 def define_graph(word2vec_embeddings_arr):
     vector_length = 40
-    num_classes = 4
+    num_classes = len(compound_class_mapping)
     num_lstm = 64
     num_layers = 4
 

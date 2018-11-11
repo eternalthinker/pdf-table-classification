@@ -1,0 +1,56 @@
+
+.highlight-selected {
+	background: rgb(240, 236, 17) !important;
+	border: 2px solid rgb(78, 65, 9) !important;
+}
+
+.highlight-selected td, .highlight-selected p {
+	background: rgb(240, 236, 17) !important;
+}
+
+.highlight2-selected {
+	background: rgb(235, 233, 158) !important;
+	border: 2px solid rgb(109, 103, 76) !important;
+}
+
+.highlight2-selected td, .highlight2-selected p {
+	background: rgb(235, 233, 158) !important;
+}
+
+.query-result {
+	background: rgb(158, 230, 252) !important;
+	border: 2px solid rgb(35, 77, 77) !important;
+}
+
+.query-result td, .query-result p {
+	background: rgb(158, 230, 252) !important;
+}
+
+td.query-col {
+	background: rgb(183, 158, 252) !important;
+	border: 2px solid rgb(57, 35, 77) !important;
+}
+
+td.query-col p {
+	background: rgb(183, 158, 252) !important;
+}
+
+.query-result.highlight-selected {
+	background: rgb(158, 252, 189) !important;
+	border: 2px solid rgb(35, 77, 51) !important;
+}
+
+.query-result.highlight-selected td, .query-result.highlight-selected p {
+	background: rgb(158, 252, 189) !important;
+}
+
+.query-result.highlight2-selected {
+	background: rgb(202, 255, 220) !important;
+	border: 2px solid rgb(57, 94, 71) !important;
+}
+
+.query-result.highlight2-selected td, .query-result.highlight2-selected p {
+	background: rgb(202, 255, 220) !important;
+}
+
+
