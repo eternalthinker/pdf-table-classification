@@ -26,15 +26,6 @@
 	background: rgb(158, 230, 252) !important;
 }
 
-td.query-col {
-	background: rgb(183, 158, 252) !important;
-	border: 2px solid rgb(57, 35, 77) !important;
-}
-
-td.query-col p {
-	background: rgb(183, 158, 252) !important;
-}
-
 .query-result.highlight-selected {
 	background: rgb(158, 252, 189) !important;
 	border: 2px solid rgb(35, 77, 51) !important;
@@ -51,6 +42,15 @@ td.query-col p {
 
 .query-result.highlight2-selected td, .query-result.highlight2-selected p {
 	background: rgb(202, 255, 220) !important;
+}
+
+td.query-col, .query-result.highlight-selected td.query-col, .query-result.highlight2-selected td.query-col {
+	background: rgb(183, 158, 252) !important;
+	border: 2px solid rgb(57, 35, 77) !important;
+}
+
+td.query-col p, .query-result.highlight-selected td.query-col p, .query-result.highlight2-selected td.query-col p {
+	background: rgb(183, 158, 252) !important;
 }
 
 

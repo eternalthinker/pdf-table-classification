@@ -7,8 +7,16 @@ OP_YEAR = 'year'
 def parse_query(query):
     if OP_AND in query:
         return parse_and(query)
+    elif OP_YEAR in query:
+        return {
+            'col': [parse_year(query)],
+            'row': []
+        }
     else:
-        return [parse_cond(query)]
+        return {
+            'col': [],
+            'row': [parse_cond(query)]
+        }
 
 def parse_and(query):
     components = query.split(OP_AND)

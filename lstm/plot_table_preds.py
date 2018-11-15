@@ -120,4 +120,4 @@ if __name__ == "__main__":
     low_dim_embs = tsne.fit_transform(X[:plot_only, :])
     labels = [reverse_class_mapping[i] for i in y[:plot_only]]
     plot_with_labels(low_dim_embs, labels)
-    plt.show();
+    plt.show()

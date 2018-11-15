@@ -17,8 +17,8 @@ a = list(range(1,11))
 np.random.shuffle(a)
 print(a)
 
-with open('pred_vecs.csv', 'r', encoding='utf-8') as pred_vecs_file, \
-     open('pred_vecs.csv', 'r', encoding='utf-8') as google_pred_vecs_file:
+with open('pred_vecs-word.csv', 'r', encoding='utf-8') as pred_vecs_file, \
+     open('pred_vecs-google.csv', 'r', encoding='utf-8') as google_pred_vecs_file:
 
     pred_vecs_set = set()
     content = pred_vecs_file.read().split('\n')[:-1]
