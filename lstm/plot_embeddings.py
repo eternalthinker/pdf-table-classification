@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib
+import gensim_load
 
 # if you get the error: "TypeError: 'figure' is an unknown keyword argument"
 # uncomment the line below:
@@ -14,7 +15,7 @@ except ImportError as e:
     print('Please install sklearn, matplotlib, and scipy to show embeddings.')
     exit()
 
-def plot_with_labels(low_dim_embs, labels, filename='tsne_embeddings.png'):
+def plot_with_labels(low_dim_embs, labels, filename='google_embeddings.png'):
     assert low_dim_embs.shape[0] >= len(labels), 'More labels than embeddings'
 
     plt.figure(figsize=(18, 18))  # in inches
@@ -35,6 +36,8 @@ if __name__ == "__main__":
     # Step 6: Visualize the embeddings.
     reverse_dictionary = np.load("Idx2Word.npy").item()
     embeddings = np.load("CBOW_Embeddings.npy")
+    embeddings, dictionary = gensim_load.load_google_embeddings()
+    reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
     tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000, method='exact')
     plot_only = 200 #len(reverse_dictionary)
     low_dim_embs = tsne.fit_transform(embeddings[:plot_only, :])

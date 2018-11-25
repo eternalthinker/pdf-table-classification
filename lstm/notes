@@ -226,3 +226,15 @@ C:\Users\et2\AppData\Local\Programs\Python\Python35\lib\site-packages\sklearn\me
 micro: 0.95000000
 macro: 0.57500000
 weighted: 0.95000000
+
+TODO
+-------
+
+* Check string similarity checking functions in Postgres
+* Print result table name in UI ----
+* Load tables into postgres (automated script)
+* Compare results 
+
+* Split meth <-> impl
+* Sliced+zoomed in screenshots of existing queries
+* New diagram for query part - backend stuff

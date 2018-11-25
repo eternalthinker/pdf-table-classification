@@ -124,7 +124,8 @@ def render_table(table_template, fname, class_str, company, orig_company, dist, 
             'class_str': class_str,
             'company': company,
             'orig_company': orig_company,
-            'distance': dist
+            'distance': dist,
+            'fname': fname
         }
     }
     style = get_style(fname)
