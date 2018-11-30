@@ -41,7 +41,10 @@ def convert_to_embedding(content):
 
     # Zero padding
     int_value[len(int_value):MAX_WORDS] = [0] * (MAX_WORDS - len(int_value))
-    return int_value
+    embedding = []
+    for idx in int_value:
+        embedding += word2vec_array[idx].tolist()
+    return embedding
 
 def split_rows(table_content):
     soup = BeautifulSoup(table_content, 'html.parser')

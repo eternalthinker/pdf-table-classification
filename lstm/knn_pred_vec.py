@@ -4,7 +4,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.grid_search import GridSearchCV
 
-from implementation import class_mapping
+from implementation import compound_class_mapping as class_mapping
 
 n_neighbors = 15
 
@@ -16,9 +16,10 @@ with open('pred_vecs.csv', 'r', encoding='utf-8') as pred_vecs_file:
     content = pred_vecs_file.read().split('\n')[:-1]
     for item in content:
         components = item.split(',')
-        filename, class_name = components[0:2]
-        pred_vec = components[2:]
+        filename, class_name, company = components[0:3]
+        pred_vec = components[3:]
         fnames.append(filename)
+        compound_class = "{}:{}".format(class_name, company)
         classes.append(class_mapping[class_name])
         pred_vec_n = list(map(lambda s: float(s), pred_vec))
         pred_vecs.append(pred_vec_n)
@@ -69,8 +70,8 @@ def tune_knn(data, target, rseed=42, verbose=1):
 verbosity = 1
 data1, data2, target1, target2 = train_test_split(X, \
                                                       y, \
-                                                      test_size=0.7, \
-                                                      random_state=42)
+                                                      test_size=0.2, \
+                                                      random_state=41)
 
 clf_knn = tune_knn(data1, target1, verbose=verbosity)
 print_accuracy(clf_knn, data1, target1, data2, target2)
