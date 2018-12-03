@@ -25,7 +25,7 @@ for class_name, class_num in class_mapping.items():
 def load_compound_class_mapping():
     compound_class_mapping = dict()
     running_class_num = 0
-    with open('classes.csv', 'r', encoding='utf-8') as classes_file:
+    with open('classes-dummy.csv', 'r', encoding='utf-8') as classes_file:
         content = classes_file.read().split('\n')[:-1]
         for item in content:
             filename, class_str, company = item.split(',')
