@@ -1,7 +1,7 @@
 # Using the data
 The following files and directories are to be copied into `lstm/`  
 * **`classes.csv`** Contains filenames containing individual table markup, their classification, and the company name.
-* **`classes-orig.csv`** This is mostly the same as above, but will always preserve the original company names. When we only want to classify based on table type (2nd column), a quick way to do this without changing any code is, change the 3rd column in `classes.csv` to the same dummy value. So, in effect, even when 2nd and 3rd column are combined to form a single class, there is still only 4 classes. This original file is kept for those cases, when you classify into 4 classes by changing `classes.csv`, but still want a reference to original classes for analysis.
+* **`classes-orig.csv`** This is mostly the same as above, but will always preserve the original company names. When we only want to classify based on table type (2nd column), a quick way to do this without changing any code is, change the 3rd column in `classes.csv` to the same dummy value. So, in effect, even when 2nd and 3rd column are combined to form a single class, there is still only 4 classes. This original file is kept for those cases, when you classify into 4 classes by changing `classes.csv`, but still want a reference to original company names for analysis.
 * **`data`** Contains extracted tables in single files. If the filename is `1234_x.html`, the original PDF will be `1234.pdf`
 * **`full_data`** Contains original PDFs and the converted HTMLs in their complete form. This can be used in cases when you want to display the tables on a web UI. The style tags can be parsed from these HTMLs to preserve the original look of tables.
 
